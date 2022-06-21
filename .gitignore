@@ -9,3 +9,5 @@ build
 target/
 metals.sbt
 .bloop
+
+.bsp/
