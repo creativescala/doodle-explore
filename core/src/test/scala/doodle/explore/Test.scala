@@ -17,16 +17,22 @@
 package doodle.explore
 
 import munit.CatsEffectSuite
+import concurrent.duration.DurationInt
+import cats.effect.IO.asyncForIO
+import cats.effect.IO
+
+import concurrent.duration.DurationInt
 
 class TestSuite extends CatsEffectSuite {
-  test("Prints sliders") {
+  test("Prints slider values") {
     val ui = makeUI
-      ui.show
+    ui.show
 
-    for (i <- 0 until 10000) {
-      val (lineWidth, iterations) = ui.value()
-      println(s"Line Width: ${lineWidth}, Iterations: ${iterations}")
-      Thread.sleep(1000)
-    }
+    ui.values
+      .metered(100.millisecond)
+      .changes
+      .map(v => println(v))
+      .compile
+      .drain
   }
 }

@@ -2,7 +2,9 @@ package doodle.explore
 
 import javax.swing._
 import javax.swing.event.ChangeListener
-import javax.swing.event.ChangeEvent
+import cats.effect.IO
+
+import fs2.Stream
 
 trait GUI[F[_]] {
   def sliderInt(name: String, start: Int, end: Int): F[Int]
@@ -12,7 +14,7 @@ trait Layout[F[_]] {
   def above[A, B](topComponent: F[A], bottomComponent: F[B]): F[(A, B)]
 }
 
-class Component[A](val value: () => A, val ui: JComponent) {
+class Component[A](val values: Stream[IO, A], val ui: JComponent) {
   def show = {
     val frame = new JFrame("Explorer")
     frame.add(ui)
@@ -32,7 +34,7 @@ implicit object Java2dGuiInterpreter extends GUI[Component] {
     panel.add(label)
     panel.add(slider)
 
-    Component(() => slider.getValue , panel)
+    Component(Stream(slider.getValue).repeat.map(_ => slider.getValue), panel)
   }
 }
 
@@ -44,7 +46,7 @@ implicit object Java2dLayoutInterpreter extends Layout[Component] {
     panel.add(bottomComponent.ui)
     panel.setVisible(true)
 
-    Component(() => (topComponent.value(), bottomComponent.value()), panel)
+    Component(topComponent.values.zip(bottomComponent.values), panel)
   }
 }
 
