@@ -19,7 +19,14 @@ package doodle.explore
 import munit.CatsEffectSuite
 
 class TestSuite extends CatsEffectSuite {
-  test("Something should happen") {
-    prog1(TestInterpreter[SimpleGUI])
+  test("Prints sliders") {
+    val ui = makeUI
+      ui.show
+
+    for (i <- 0 until 10000) {
+      val (lineWidth, iterations) = ui.value()
+      println(s"Line Width: ${lineWidth}, Iterations: ${iterations}")
+      Thread.sleep(1000)
+    }
   }
 }
