@@ -5,6 +5,7 @@ import javax.swing.event.ChangeListener
 import cats.effect.IO
 
 import fs2.Stream
+import fs2.Pure
 
 trait GUI[F[_]] {
   def sliderInt(name: String, start: Int, end: Int): F[Int]
@@ -14,7 +15,7 @@ trait Layout[F[_]] {
   def above[A, B](topComponent: F[A], bottomComponent: F[B]): F[(A, B)]
 }
 
-class Component[A](val values: Stream[IO, A], val ui: JComponent) {
+class Component[A](val values: Stream[Pure, A], val ui: JComponent) {
   def show = {
     val frame = new JFrame("Explorer")
     frame.add(ui)

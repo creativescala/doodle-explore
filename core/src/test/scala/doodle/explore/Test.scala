@@ -23,16 +23,47 @@ import cats.effect.IO
 
 import concurrent.duration.DurationInt
 
+import doodle.core._
+import doodle.image._
+import doodle.image.syntax._
+import doodle.image.syntax.all._
+import doodle.image.syntax.core._
+import doodle.java2d._
+
+import doodle.java2d.effect.Center._
+import doodle.java2d.effect.Redraw._
+import doodle.java2d.effect.Size._
+
+import doodle.syntax.all.RendererFrameOps
+import doodle.interact.syntax._
+
+import fs2.Stream
+
 class TestSuite extends CatsEffectSuite {
-  test("Prints slider values") {
+  test("Basic GUI") {
     val ui = makeUI
+
+    def sierpinski(n: Int, size: Int): Image = {
+      def builder(component: Image) = {
+        component above(
+          component beside component
+        )
+      }
+
+      (1 to n).foldLeft(Image.triangle(size, size)) { case (unit, _) =>
+        builder(unit)
+      }
+    }
+
     ui.show
 
-    ui.values
-      .metered(100.millisecond)
-      .changes
-      .map(v => println(v))
-      .compile
-      .drain
+    val frame = Frame(FitToImage(10), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
+    frame.canvas().flatMap { canvas =>
+      val frames: Stream[IO, Picture[Unit]] = ui.values.metered(500.millisecond).changes.map { case (a, b) =>
+        Image.compile(sierpinski(5, b))
+      }
+
+      frames.animateWithCanvasToIO(canvas)
+    }
   }
 }
