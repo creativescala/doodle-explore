@@ -16,6 +16,7 @@ trait GUI[F[_]] {
 
 trait Layout[F[_]] {
   def above[A, B](topComponent: F[A], bottomComponent: F[B]): F[(A, B)]
+  def beside[A, B](leftComponent: F[A], rightComponent: F[B]): F[(A, B)]
 }
 
 class Component[A](val values: Stream[Pure, A], val ui: JComponent) {
@@ -71,13 +72,24 @@ implicit object Java2dGuiInterpreter extends GUI[Component] {
 }
 
 implicit object Java2dLayoutInterpreter extends Layout[Component] {
-  override def above[A, B](topComponent: Component[A], bottomComponent: Component[B]): Component[(A, B)] = {
-    val panel = new JPanel
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
-    panel.add(topComponent.ui)
-    panel.add(bottomComponent.ui)
-    panel.setVisible(true)
+  // Potential issue: layouts will be highly nested since each additional component
+  // adds another BoxLayout, this adds a probably-insignificant performance impact
 
+  def dualBoxLayout(direction: Int, fstComponent: JComponent, sndComponent: JComponent): JComponent = {
+    val panel = new JPanel
+    panel.setLayout(new BoxLayout(panel, direction))
+    panel.add(fstComponent)
+    panel.add(sndComponent)
+    panel
+  }
+
+  override def above[A, B](topComponent: Component[A], bottomComponent: Component[B]): Component[(A, B)] = {
+    val panel = dualBoxLayout(BoxLayout.Y_AXIS, topComponent.ui, bottomComponent.ui)
     Component(topComponent.values.zip(bottomComponent.values), panel)
+  }
+
+  override def beside[A, B](leftComponent: Component[A], rightComponent: Component[B]): Component[(A, B)] = {
+    val panel = dualBoxLayout(BoxLayout.X_AXIS, leftComponent.ui, rightComponent.ui)
+    Component(leftComponent.values.zip(rightComponent.values), panel)
   }
 }
