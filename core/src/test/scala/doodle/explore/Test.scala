@@ -41,8 +41,6 @@ import fs2.Stream
 
 class TestSuite extends CatsEffectSuite {
   test("Basic GUI") {
-    val ui = makeUI
-
     def sierpinski(n: Int, size: Int): Image = {
       def builder(component: Image) = {
         component above(
@@ -55,13 +53,28 @@ class TestSuite extends CatsEffectSuite {
       }
     }
 
+    def explorer(implicit gui: GUI[Component], layout: Layout[Component]) = {
+      import gui._
+      import layout._
+
+      above(
+        sliderInt("Base Size", 0, 20, 8),
+        sliderInt("Iterations", 1, 8, 2)
+      )
+    }
+
+    val ui = explorer
     ui.show
 
     val frame = Frame(FitToImage(10), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
     frame.canvas().flatMap { canvas =>
-      val frames: Stream[IO, Picture[Unit]] = ui.values.metered(500.millisecond).changes.map { case (a, b) =>
-        Image.compile(sierpinski(5, b))
-      }
+      val frames: Stream[IO, Picture[Unit]] = 
+        ui.values
+          .metered(500.millisecond)
+          .changes
+          .map { case (size, iterations) =>
+            Image.compile(sierpinski(size, iterations))
+          }
 
       frames.animateWithCanvasToIO(canvas)
     }

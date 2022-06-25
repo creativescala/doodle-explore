@@ -8,7 +8,7 @@ import fs2.Stream
 import fs2.Pure
 
 trait GUI[F[_]] {
-  def sliderInt(name: String, start: Int, end: Int): F[Int]
+  def sliderInt(name: String, start: Int, end: Int, initValue: Int): F[Int]
 }
 
 trait Layout[F[_]] {
@@ -25,16 +25,18 @@ class Component[A](val values: Stream[Pure, A], val ui: JComponent) {
 }
 
 implicit object Java2dGuiInterpreter extends GUI[Component] {
-  override def sliderInt(name: String, start: Int, end: Int): Component[Int] = {
+  override def sliderInt(name: String, start: Int, end: Int, initValue: Int): Component[Int] = {
     val panel = new JPanel
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS))
 
     val label = JLabel(name)
-    val slider = JSlider(start, end)
+    val slider = JSlider(start, end, initValue)
+    slider.setSnapToTicks(true)
 
     panel.add(label)
     panel.add(slider)
 
+    // TODO: There must be a better way to make an infinite stream of values
     Component(Stream(slider.getValue).repeat.map(_ => slider.getValue), panel)
   }
 }
@@ -50,25 +52,3 @@ implicit object Java2dLayoutInterpreter extends Layout[Component] {
     Component(topComponent.values.zip(bottomComponent.values), panel)
   }
 }
-
-def makeUI(implicit gui: GUI[Component], layout: Layout[Component]) = {
-  import gui._
-  import layout._
-
-  above(
-    sliderInt("Line Width", 0, 10),
-    sliderInt("Iterations", 2, 20)
-  )
-}
-
-// object Main extends App {
-//   val ui = makeUI
-//   ui.show
-
-//   for (i <- 0 until 10000) {
-//     val (lineWidth, iterations) = ui.value()
-//     println(s"Line Width: ${lineWidth}, Iterations: ${iterations}")
-//     Thread.sleep(1000)
-//   }
-// }
-
