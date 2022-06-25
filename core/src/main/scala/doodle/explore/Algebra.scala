@@ -4,11 +4,14 @@ import javax.swing._
 import javax.swing.event.ChangeListener
 import cats.effect.IO
 
+import doodle.core.{Color, UnsignedByte, Normalized}
+
 import fs2.Stream
 import fs2.Pure
 
 trait GUI[F[_]] {
   def sliderInt(name: String, start: Int, end: Int, initValue: Int): F[Int]
+  def colorPicker(name: String, initColor: Color): F[Color]
 }
 
 trait Layout[F[_]] {
@@ -37,7 +40,33 @@ implicit object Java2dGuiInterpreter extends GUI[Component] {
     panel.add(slider)
 
     // TODO: There must be a better way to make an infinite stream of values
-    Component(Stream(slider.getValue).repeat.map(_ => slider.getValue), panel)
+    Component(Stream(0).repeat.map(_ => slider.getValue), panel)
+  }
+
+  override def colorPicker(name: String, initColor: Color): Component[Color] = {
+    val panel = new JPanel
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
+
+    val label = JLabel(name)
+
+    val toPercent = (byte: UnsignedByte) => byte.get.toFloat / 255f
+    val toJavaColor = (color: Color) => java.awt.Color(
+      toPercent(color.red), toPercent(color.green), toPercent(color.blue)
+    )
+    val fromJavaColor = (color: java.awt.Color) => Color.RGBA(
+      UnsignedByte((color.getRed - 128).toByte), 
+      UnsignedByte((color.getGreen - 128).toByte),
+      UnsignedByte((color.getBlue - 128).toByte),
+      Normalized(color.getAlpha.toDouble / 255.0),
+    )
+
+    val jcolor = java.awt.Color(toPercent(initColor.red), toPercent(initColor.green), toPercent(initColor.blue))
+    val colorPicker = JColorChooser(jcolor)
+
+    panel.add(label)
+    panel.add(colorPicker)
+
+    Component(Stream(0).repeat.map(_ => fromJavaColor(colorPicker.getColor)), panel)
   }
 }
 
