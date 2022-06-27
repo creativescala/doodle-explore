@@ -4,6 +4,8 @@ import javax.swing._
 import javax.swing.event.ChangeListener
 import cats.effect.IO
 
+import java.awt.{Color => AwtColor}
+
 import doodle.core.{Color, UnsignedByte, Normalized}
 
 import fs2.Stream
@@ -17,6 +19,16 @@ trait GUI[F[_]] {
 trait Layout[F[_]] {
   def above[A, B](topComponent: F[A], bottomComponent: F[B]): F[(A, B)]
   def beside[A, B](leftComponent: F[A], rightComponent: F[B]): F[(A, B)]
+}
+
+implicit class LayoutOps[A](component: Component[A])(implicit layout: Layout[Component]) {
+  def above[B](other: Component[B]) = {
+    layout.above(component, other)
+  }
+
+  def beside[B](other: Component[B]) = {
+    layout.beside(component, other)
+  }
 }
 
 class Component[A](val values: Stream[Pure, A], val ui: JComponent) {
@@ -33,6 +45,7 @@ implicit object Java2dGuiInterpreter extends GUI[Component] {
     val panel = new JPanel
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS))
 
+    // TODO: Label for selected value?
     val label = JLabel(name)
     val slider = JSlider(start, end, initValue)
     slider.setSnapToTicks(true)
@@ -50,24 +63,24 @@ implicit object Java2dGuiInterpreter extends GUI[Component] {
 
     val label = JLabel(name)
 
-    val toPercent = (byte: UnsignedByte) => byte.get.toFloat / 255f
-    val toJavaColor = (color: Color) => java.awt.Color(
-      toPercent(color.red), toPercent(color.green), toPercent(color.blue)
-    )
-    val fromJavaColor = (color: java.awt.Color) => Color.RGBA(
+    def toAwtColor(color: Color) = {
+      val rgba = color.toRGBA
+      AwtColor(rgba.r.get, rgba.g.get, rgba.b.get, rgba.a.toUnsignedByte.get)
+    }
+
+    def fromAwtColor(color: java.awt.Color) = Color.RGBA(
       UnsignedByte((color.getRed - 128).toByte), 
       UnsignedByte((color.getGreen - 128).toByte),
       UnsignedByte((color.getBlue - 128).toByte),
       Normalized(color.getAlpha.toDouble / 255.0),
-    )
+      )
 
-    val jcolor = java.awt.Color(toPercent(initColor.red), toPercent(initColor.green), toPercent(initColor.blue))
-    val colorPicker = JColorChooser(jcolor)
+    val colorPicker = JColorChooser(toAwtColor(initColor))
 
     panel.add(label)
     panel.add(colorPicker)
 
-    Component(Stream(0).repeat.map(_ => fromJavaColor(colorPicker.getColor)), panel)
+    Component(Stream(0).repeat.map(_ => fromAwtColor(colorPicker.getColor)), panel)
   }
 }
 

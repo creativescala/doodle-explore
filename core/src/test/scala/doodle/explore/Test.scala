@@ -57,16 +57,10 @@ class TestSuite extends CatsEffectSuite {
       import gui._
       import layout._
 
-      beside(
-        above(
-          above(
-            sliderInt("Base Size", 0, 60, 20),
-            sliderInt("Iterations", 1, 8, 2),
-            ),
-          sliderInt("Rotation", 0, 360, 0),
-          ),
-        colorPicker("Stroke Color", doodle.core.Color.black)
-      )
+      sliderInt("Base Size", 0, 60, 20)
+        .above(sliderInt("Iterations", 1, 8, 2))
+        .above(sliderInt("Rotation", -180, 180, 0))
+        .beside(colorPicker("Stroke Color", doodle.core.Color.black))
     }
 
     val ui = explorer
@@ -76,7 +70,6 @@ class TestSuite extends CatsEffectSuite {
     frame.canvas().flatMap { canvas =>
       val frames: Stream[IO, Picture[Unit]] = 
         ui.values
-          .metered(500.millisecond)
           .map { case (((size, iterations), angle), color) =>
             Image.compile(sierpinski(iterations, size).rotate(angle.toDouble.degrees).strokeColor(color))
           }
