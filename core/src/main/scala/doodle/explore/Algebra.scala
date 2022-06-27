@@ -21,12 +21,12 @@ trait Layout[F[_]] {
   def beside[A, B](leftComponent: F[A], rightComponent: F[B]): F[(A, B)]
 }
 
-implicit class LayoutOps[A](component: Component[A])(implicit layout: Layout[Component]) {
-  def above[B](other: Component[B]) = {
+implicit class LayoutOps[A, F[_]](component: F[A])(implicit layout: Layout[F]) {
+  def above[B](other: F[B]) = {
     layout.above(component, other)
   }
 
-  def beside[B](other: Component[B]) = {
+  def beside[B](other: F[B]) = {
     layout.beside(component, other)
   }
 }
