@@ -34,7 +34,7 @@ import doodle.java2d.effect.Center._
 import doodle.java2d.effect.Redraw._
 import doodle.java2d.effect.Size._
 
-import doodle.syntax.all.RendererFrameOps
+import doodle.syntax.all.{RendererFrameOps, AngleIntOps}
 import doodle.interact.syntax._
 
 import doodle.explore.java2d._
@@ -43,17 +43,34 @@ import doodle.explore._
 import fs2.Stream
 
 class TestSuite extends CatsEffectSuite {
-  test("Basic GUI") {
-    def sierpinski(n: Int, size: Int): Image = {
-      def builder(component: Image) = {
-        component above(
-          component beside component
-        )
+  test("Infinite Smiley") {
+    def smiley(n: Int, size: Int): Image = {
+      def builder(component: Image, size: Int) = {
+        val smileSize = size.toDouble * 2.5
+        val smile = Image.interpolatingSpline(List(
+          Point.Polar(smileSize, -180.degrees), 
+          Point.Polar(smileSize * 0.8, -160.degrees), 
+          Point.Polar(smileSize * 0.4, -90.degrees), 
+          Point.Polar(smileSize * 0.8, -20.degrees), 
+          Point.Polar(smileSize, 0.degrees)
+        ))
+
+        val outline = Image.circle(smileSize * 3)
+
+        val lEyePos = Point(-smileSize / 2, 0.0)
+        val rEyePos = Point(smileSize / 2, 0.0)
+        val smilePos = Point(0.0, -smileSize / 1)
+        val outlinePos = Point(0.0, -size * 2)
+
+        (component.at(lEyePos))
+          .on(component.at(rEyePos))
+          .on(smile.at(smilePos)
+          .on(outline.at(outlinePos)))
       }
 
-      (1 to n).foldLeft(Image.triangle(size, size)) { case (unit, _) =>
-        builder(unit)
-      }
+      (1 to n).foldLeft((Image.circle(size), size)) { case ((unit, size), _) => 
+        (builder(unit, size), size * 5)
+      }._1
     }
 
     def explorer(implicit 
@@ -65,21 +82,28 @@ class TestSuite extends CatsEffectSuite {
       import colorGui._
       // import layout._
 
-      (int("Base Size") within(0, 100) startingWith(20))
-        .above(int("Iterations") within(1, 10) startingWith(2))
-        .above(int("Rotation") within(-180, 180))
-        .above(color("Stroke Color"))
+      (int("Base Size").within(1, 60).startingWith(10))
+        .above(int("Iterations").within(1, 5).startingWith(1))
+        .above(int("Stroke Width").within(1, 20).startingWith(2))
+        .above(color("Background").withDefault(Color.white))
+        .above(color("Foreground").withDefault(Color.black))
+        .above(int("X Offset").within(-1000, 1000))
+        .above(int("Y Offset").within(-1000, 1000))
     }
 
     val ui = explorer
-    ui.show
+    ui.show()
 
-    val frame = Frame(FixedSize(800.0, 800.0), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
+
+    val frame = Frame(FixedSize(1200.0, 1200.0), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
     frame.canvas().flatMap { canvas =>
       val frames: Stream[IO, Picture[Unit]] =
         ui.values
-          .map { case (((size, iterations), angle), color) =>
-            Image.compile(sierpinski(iterations, size).rotate(angle.toDouble.degrees).strokeColor(color))
+          .map { case ((((((size, iterations), stroke), background), foreground), xOffset), yOffset) =>
+            Image.compile(
+              smiley(iterations, size).strokeColor(foreground).strokeWidth(stroke).at(Point(xOffset, yOffset))
+                .on(Image.circle(2400).fillColor(background))
+            )
           }
 
       frames.animateWithCanvasToIO(canvas)
