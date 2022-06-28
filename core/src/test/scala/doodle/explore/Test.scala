@@ -37,6 +37,9 @@ import doodle.java2d.effect.Size._
 import doodle.syntax.all.RendererFrameOps
 import doodle.interact.syntax._
 
+import doodle.explore.java2d._
+import doodle.explore._
+
 import fs2.Stream
 
 class TestSuite extends CatsEffectSuite {
@@ -53,13 +56,19 @@ class TestSuite extends CatsEffectSuite {
       }
     }
 
-    def explorer(implicit gui: ExploreInt[Component, IntSlider], layout: Layout[Component]) = {
-      import gui._
+    def explorer(implicit 
+      intGui: ExploreInt[Component, IntSlider], 
+      colorGui: ExploreColor[Component],
+      layout: Layout[Component]
+    ) = {
+      import intGui._
+      import colorGui._
       // import layout._
 
-      (int("Base Size").within(0, 100).startingWith(20))
-        .above(int("Iterations").within(1, 10).startingWith(2))
-        .above(int("Rotation").within(-180, 180))
+      (int("Base Size") within(0, 100) startingWith(20))
+        .above(int("Iterations") within(1, 10) startingWith(2))
+        .above(int("Rotation") within(-180, 180))
+        .above(color("Stroke Color"))
     }
 
     val ui = explorer
@@ -69,8 +78,8 @@ class TestSuite extends CatsEffectSuite {
     frame.canvas().flatMap { canvas =>
       val frames: Stream[IO, Picture[Unit]] =
         ui.values
-          .map { case ((size, iterations), angle) =>
-            Image.compile(sierpinski(iterations, size).rotate(angle.toDouble.degrees))
+          .map { case (((size, iterations), angle), color) =>
+            Image.compile(sierpinski(iterations, size).rotate(angle.toDouble.degrees).strokeColor(color))
           }
 
       frames.animateWithCanvasToIO(canvas)
