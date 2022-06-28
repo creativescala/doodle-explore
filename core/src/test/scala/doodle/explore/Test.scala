@@ -87,26 +87,23 @@ class TestSuite extends CatsEffectSuite {
         .above(int("Stroke Width").within(1, 20).startingWith(2))
         .above(color("Background").withDefault(Color.white))
         .above(color("Foreground").withDefault(Color.black))
-        .above(int("X Offset").within(-1000, 1000))
-        .above(int("Y Offset").within(-1000, 1000))
+        .above(
+          (int("X Offset").within(-1000, 1000))
+            .beside(int("Y Offset").within(-1000, 1000))
+        )
     }
-
-    val ui = explorer
-    ui.show()
 
 
     val frame = Frame(FixedSize(1200.0, 1200.0), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
-    frame.canvas().flatMap { canvas =>
-      val frames: Stream[IO, Picture[Unit]] =
-        ui.values
-          .map { case ((((((size, iterations), stroke), background), foreground), xOffset), yOffset) =>
-            Image.compile(
-              smiley(iterations, size).strokeColor(foreground).strokeWidth(stroke).at(Point(xOffset, yOffset))
-                .on(Image.circle(2400).fillColor(background))
-            )
-          }
 
-      frames.animateWithCanvasToIO(canvas)
-    }
+    explorer.explore(frame, { 
+      case ((((((size, iterations), stroke), background), foreground), (xOffset, yOffset))) =>
+        val smile = smiley(iterations, size).strokeColor(foreground).strokeWidth(stroke)
+        val backgroundCircle = Image.circle(2400).fillColor(background)
+
+        Image.compile {
+          (smile at Point(xOffset, yOffset)) on backgroundCircle
+        }
+    })
   }
 }
