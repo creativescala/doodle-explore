@@ -53,14 +53,13 @@ class TestSuite extends CatsEffectSuite {
       }
     }
 
-    def explorer(implicit gui: GUI[Component], layout: Layout[Component]) = {
+    def explorer(implicit gui: ExploreInt[Component, IntSlider], layout: Layout[Component]) = {
       import gui._
-      import layout._
+      // import layout._
 
-      sliderInt("Base Size", 0, 60, 20)
-        .above(sliderInt("Iterations", 1, 8, 2))
-        .above(sliderInt("Rotation", -180, 180, 0))
-        .beside(colorPicker("Stroke Color", doodle.core.Color.black))
+      (int("Base Size").within(0, 100).startingWith(20))
+        .above(int("Iterations").within(1, 10).startingWith(2))
+        .above(int("Rotation").within(-180, 180))
     }
 
     val ui = explorer
@@ -68,10 +67,10 @@ class TestSuite extends CatsEffectSuite {
 
     val frame = Frame(FixedSize(800.0, 800.0), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
     frame.canvas().flatMap { canvas =>
-      val frames: Stream[IO, Picture[Unit]] = 
+      val frames: Stream[IO, Picture[Unit]] =
         ui.values
-          .map { case (((size, iterations), angle), color) =>
-            Image.compile(sierpinski(iterations, size).rotate(angle.toDouble.degrees).strokeColor(color))
+          .map { case ((size, iterations), angle) =>
+            Image.compile(sierpinski(iterations, size).rotate(angle.toDouble.degrees))
           }
 
       frames.animateWithCanvasToIO(canvas)
