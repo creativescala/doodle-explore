@@ -20,14 +20,13 @@ import fs2.Pure
 import cats.effect.IO
 
 trait Explorer[F, A] {
-  def show: F
-  def values: Stream[Pure, A]
+  def run: Stream[Pure, A]
 
   def explore(frame: Frame, render: A => Picture[Unit]) = {
-    this.show
+    val values = this.run
 
     frame.canvas().flatMap { canvas =>
-      val frames: Stream[IO, Picture[Unit]] = this.values.map(render)
+      val frames: Stream[IO, Picture[Unit]] = values.map(render)
       frames.animateWithCanvasToIO(canvas)
     }
   }

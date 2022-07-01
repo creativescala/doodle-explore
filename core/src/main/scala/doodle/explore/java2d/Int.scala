@@ -6,19 +6,10 @@ import javax.swing._
 import fs2.Stream
 import fs2.Pure
 
-import doodle.explore.{ExploreInt}
+import doodle.explore.{Explorer, ExploreInt}
 
-class IntSlider(
-  override val label: String, 
-  override val ui: JComponent, 
-  override val values: Stream[Pure, Int], 
-  val start: Int, 
-  val end: Int, 
-  val initValue: Int
-) extends Component[Int](label, ui, values)
-
-implicit object IntInterpreter extends ExploreInt[Component, IntSlider] {
-  def labelInput[A <: JComponent](label: String, ui: A): JPanel = {
+final case class IntIR[A](label: String, bounds: Option[(Int, Int)], initial: Int) extends Component[Int] {
+  def labelInput[C <: JComponent](label: String, ui: C): JPanel = {
     val panel = new JPanel
     panel.setLayout(BoxLayout(panel, BoxLayout.X_AXIS))
 
@@ -29,24 +20,26 @@ implicit object IntInterpreter extends ExploreInt[Component, IntSlider] {
     panel
   }
 
-  override def int(label: String) = {
-    val input = JTextField("0")
-    val ui = labelInput(label, input)
+  def runAndMakeUI = bounds match {
+    case Some((start, end)) =>
+      val slider = JSlider(start, end, initial)
+      val ui = labelInput(label, slider)
+      (ui, Stream(initial).repeat.map(_ => slider.getValue))
 
-    Component(label, ui, Stream(0).repeat.map(_ => input.getText.toInt))
+    case None =>
+      val input = JTextField(initial.toString)
+      val ui = labelInput(label, input)
+      (ui, Stream(initial).repeat.map(_ => input.getText.toInt))
   }
+}
 
-  override def within(generator: Component[Int], start: Int, end: Int) = {
-    val slider = JSlider(start, end)
-    val ui = labelInput(generator.label, slider)
+implicit object IntInterpreter extends ExploreInt[IntIR] {
+  override def int(label: String) = 
+    IntIR(label, None, 0)
 
-    IntSlider(generator.label, ui, Stream(0).repeat.map(_ => slider.getValue), start, end, (start + end) / 2)
-  }
+  override def within(generator: IntIR[Int], start: Int, end: Int) =
+    generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
 
-  override def startingWith(generator: IntSlider, initValue: Int) = {
-    val slider = JSlider(generator.start, generator.end, initValue)
-    val ui = labelInput(generator.label, slider)
-
-    IntSlider(generator.label, ui, Stream(0).repeat.map(_ => slider.getValue), generator.start, generator.end, initValue)
-  }
+  override def startingWith(generator: IntIR[Int], newInitial: Int) = 
+    generator.copy(initial = newInitial)
 }

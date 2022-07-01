@@ -3,7 +3,7 @@ package doodle.explore.java2d
 import doodle.explore._
 import javax.swing._
 
-implicit object LayoutInterpreter extends Layout[Component] {
+final case class LayoutIR[A, B](direction: Int, a: Component[A], b: Component[B]) extends Component[(A, B)] {
   def dualBoxLayout(direction: Int, a: JComponent, b: JComponent) = {
     val panel = JPanel()
     panel.setLayout(BoxLayout(panel, direction))
@@ -12,15 +12,17 @@ implicit object LayoutInterpreter extends Layout[Component] {
     panel
   }
 
-  def above[A, B](top: Component[A], bottom: Component[B]) = {
-    val ui = dualBoxLayout(BoxLayout.Y_AXIS, top.ui, bottom.ui)
-    val label = s"${top.label}, ${bottom.label}"
-    Component(label, ui, top.values.zip(bottom.values))
+  def runAndMakeUI = {
+    val (aUI, aValues) = a.runAndMakeUI
+    val (bUI, bValues) = b.runAndMakeUI
+    (dualBoxLayout(direction, aUI, bUI), aValues.zip(bValues))
   }
+}
 
-  def beside[A, B](left: Component[A], right: Component[B]) = {
-    val ui = dualBoxLayout(BoxLayout.X_AXIS, left.ui, right.ui)
-    val label = s"${left.label}, ${right.label}"
-    Component(label, ui, left.values.zip(right.values))
-  }
+implicit object LayoutInterpreter extends Layout[Component] {
+  def above[A, B](top: Component[A], bottom: Component[B]) =
+    LayoutIR(BoxLayout.Y_AXIS, top, bottom)
+
+  def beside[A, B](left: Component[A], right: Component[B]) =
+    LayoutIR(BoxLayout.X_AXIS, left, right)
 }

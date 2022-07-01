@@ -39,6 +39,9 @@ import doodle.interact.syntax._
 
 import doodle.explore.java2d._
 import doodle.explore._
+import doodle.explore.LayoutOps._
+import doodle.explore.IntComponentOps._
+import doodle.explore.ColorComponentOps._
 
 import fs2.Stream
 
@@ -73,22 +76,22 @@ class TestSuite extends CatsEffectSuite {
       }._1
     }
 
-    def explorer(implicit 
-      intGui: ExploreInt[Component, IntSlider], 
-      colorGui: ExploreColor[Component],
+    def explorer(using 
+      intGui: ExploreInt[IntIR], 
+      colorGui: ExploreColor[ColorIR],
       layout: Layout[Component]
     ) = {
       import intGui._
       import colorGui._
       // import layout._
 
-      (int("Base Size").within(1, 60).startingWith(10))
+      (int("Base Size").within(1, 60).startingWith(10).asInstanceOf[Component[Int]])
         .above(int("Iterations").within(1, 5).startingWith(1))
         .above(int("Stroke Width").within(1, 20).startingWith(2))
         .above(color("Background").withDefault(Color.white))
         .above(color("Foreground").withDefault(Color.black))
         .above(
-          (int("X Offset").within(-1000, 1000))
+          (int("X Offset").within(-1000, 1000).asInstanceOf[Component[Int]])
             .beside(int("Y Offset").within(-1000, 1000))
         )
     }

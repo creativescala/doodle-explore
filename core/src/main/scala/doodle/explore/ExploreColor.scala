@@ -11,8 +11,9 @@ trait ExploreColor[F[_]] {
   def withDefault(generator: F[Color], initValue: Color): F[Color]
 }
 
-implicit class ColorComonentOps[F[_]](component: F[Color])(implicit exploreColor: ExploreColor[F]) {
-  def withDefault(initValue: Color) = {
-    exploreColor.withDefault(component, initValue)
+object ColorComponentOps {
+  extension [F[_]](component: F[Color])(using exploreColor: ExploreColor[F]) {
+    def withDefault(initValue: Color) =
+      exploreColor.withDefault(component, initValue)
   }
 }
