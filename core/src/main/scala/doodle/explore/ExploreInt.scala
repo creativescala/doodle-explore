@@ -11,6 +11,11 @@ object IntComponentOps {
     def within(start: Int, end: Int) =
       exploreInt.within(component, start, end)
 
+    def within(range: Range) = if (range.isInclusive)
+      exploreInt.within(component, range.start, range.end)
+    else
+      exploreInt.within(component, range.start, range.end - 1)
+
     def startingWith(initValue: Int) =
       exploreInt.startingWith(component, initValue)
   }

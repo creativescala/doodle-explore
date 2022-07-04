@@ -1,7 +1,5 @@
 package doodle.explore
 
-import doodle.explore.java2d.IntIR
-
 trait Layout[F[_]] {
   def above[A, B](top: F[A], bottom: F[B]): F[(A, B)]
   def beside[A, B](left: F[A], right: F[B]): F[(A, B)]
