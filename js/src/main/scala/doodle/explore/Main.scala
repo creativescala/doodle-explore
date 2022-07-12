@@ -42,8 +42,10 @@ implicit object IntInterpreter extends ExploreInt[JSComponent] {
   import JSComponent.IntIR
 
   override def int(label: String) = IntIR(0)
-  override def within(generator: JSComponent[Int], start: Int, end: Int) = IntIR(0)
-  override def startingWith(generator: JSComponent[Int], newInitial: Int) = IntIR(newInitial)
+  override def within(generator: JSComponent[Int], start: Int, end: Int) =
+    IntIR(0)
+  override def startingWith(generator: JSComponent[Int], newInitial: Int) =
+    IntIR(newInitial)
 }
 
 object SlinkyStuff {
@@ -64,27 +66,26 @@ object SlinkyStuff {
 }
 
 object Main {
-  def explorer(using 
-    intGui: ExploreInt[JSComponent], 
-    // colorGui: ExploreColor[Component],
-    // layout: Layout[Component]
-    ) = {
-      import intGui._
-      // import colorGui._
-      // import layout._
+  def explorer(using
+      intGui: ExploreInt[JSComponent]
+      // colorGui: ExploreColor[Component],
+      // layout: Layout[Component]
+  ) = {
+    import intGui._
+    // import colorGui._
+    // import layout._
 
-      int("Base Size").within(1 to 60).startingWith(10)
-      // (int("Base Size") within (1 to 60) startingWith 10)
-      //   .above(int("Iterations") within (1 to 5) startingWith 1)
-      //   .above(int("Stroke Width") within (1 to 20) startingWith 2)
-      //   .above(color("Background") withDefault Color.white)
-      //   .above(color("Foreground") withDefault Color.black)
-      //   .above(
-      //     (int("X Offset") within (-1000 to 1000))
-      //       .beside(int("Y Offset") within (-1000 to 1000))
-      //   )
+    int("Base Size").within(1 to 60).startingWith(10)
+    // (int("Base Size") within (1 to 60) startingWith 10)
+    //   .above(int("Iterations") within (1 to 5) startingWith 1)
+    //   .above(int("Stroke Width") within (1 to 20) startingWith 2)
+    //   .above(color("Background") withDefault Color.white)
+    //   .above(color("Foreground") withDefault Color.black)
+    //   .above(
+    //     (int("X Offset") within (-1000 to 1000))
+    //       .beside(int("Y Offset") within (-1000 to 1000))
+    //   )
   }
-
 
   @JSExportTopLevel("main")
   def main(args: Array[String]) = {

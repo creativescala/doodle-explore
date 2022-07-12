@@ -18,7 +18,7 @@
 //   }
 
 //   def fromAwtColor(color: java.awt.Color) = Color.RGBA(
-//     UnsignedByte((color.getRed - 128).toByte), 
+//     UnsignedByte((color.getRed - 128).toByte),
 //     UnsignedByte((color.getGreen - 128).toByte),
 //     UnsignedByte((color.getBlue - 128).toByte),
 //     Normalized(color.getAlpha.toDouble / 255.0),
@@ -39,7 +39,7 @@
 // }
 
 // implicit object ColorInterpreter extends ExploreColor[ColorIR] {
-//   override def color(name: String) = 
+//   override def color(name: String) =
 //     ColorIR[Color](name, Color.black.asInstanceOf[Color])
 
 //   override def withDefault(generator: ColorIR[Color], initColor: Color) = {

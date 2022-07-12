@@ -18,7 +18,7 @@ ThisBuild / tlSonatypeUseLegacyHost := false
 ThisBuild / tlSitePublishBranch := Some("main")
 
 val Scala312 = "3.1.2"
-ThisBuild / crossScalaVersions := Seq(Scala312/*, "2.13.8"*/)
+ThisBuild / crossScalaVersions := Seq(Scala312 /*, "2.13.8"*/ )
 ThisBuild / scalaVersion := Scala312 // the default Scala
 
 lazy val root = tlCrossRootProject.aggregate(core)
@@ -51,7 +51,8 @@ lazy val java2d = crossProject(JVMPlatform)
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
     )
-  ).dependsOn(core)
+  )
+  .dependsOn(core)
 
 lazy val slinky = crossProject(JSPlatform).in(file("slinky"))
 
@@ -73,22 +74,26 @@ lazy val js = crossProject(JSPlatform)
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
     ),
-
     scalacOptions += "-Ymacro-annotations",
     webpack / version := "4.44.2",
     startWebpackDevServer / version := "3.11.2",
     webpackResources := baseDirectory.value / "webpack" * "*",
-    fastOptJS / webpackConfigFile := Some(baseDirectory.value / "webpack" / "webpack-fastopt.config.js"),
-    fullOptJS / webpackConfigFile := Some(baseDirectory.value / "webpack" / "webpack-opt.config.js"),
-    Test / webpackConfigFile := Some(baseDirectory.value / "webpack" / "webpack-core.config.js"),
+    fastOptJS / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-fastopt.config.js"
+    ),
+    fullOptJS / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-opt.config.js"
+    ),
+    Test / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-core.config.js"
+    ),
     fastOptJS / webpackDevServerExtraArgs := Seq("--inline", "--hot"),
     fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
     Test / requireJsDomEnv := true,
     addCommandAlias("dev", ";fastOptJS::startWebpackDevServer;~fastOptJS"),
-    addCommandAlias("build", "fullOptJS::webpack"),
-    )
-    .dependsOn(core)
-    .dependsOn(slinky)
-
+    addCommandAlias("build", "fullOptJS::webpack")
+  )
+  .dependsOn(core)
+  .dependsOn(slinky)
 
 lazy val docs = project.in(file("site")).enablePlugins(TypelevelSitePlugin)

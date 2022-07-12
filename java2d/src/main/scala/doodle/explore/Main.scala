@@ -50,7 +50,7 @@ object Main extends IOApp.Simple {
   def simulate(angle: Angle, speed: Double, t: Double) = {
     val translation = Point(
       scala.math.cos(angle.toRadians) * speed * t,
-      scala.math.sin(angle.toRadians) * speed * t,
+      scala.math.sin(angle.toRadians) * speed * t
     )
 
     val gravity = 1.0
@@ -72,10 +72,10 @@ object Main extends IOApp.Simple {
     state.copy(pos = state.pos + state.vel * dt, vel = state.vel + accel * dt)
   }
 
-  def explorer(using 
-    intGui: ExploreInt[Component],
-    buttonGui: ExploreButton[Component],
-    layout: Layout[Component],
+  def explorer(using
+      intGui: ExploreInt[Component],
+      buttonGui: ExploreButton[Component],
+      layout: Layout[Component]
   ) = {
     import intGui._
     import buttonGui._
@@ -93,27 +93,37 @@ object Main extends IOApp.Simple {
   }
 
   def run: IO[Unit] = {
-    val frame = Frame(FixedSize(1200.0, 1200.0), "Explore", AtOrigin, Some(Color.white), ClearToBackground)
+    val frame = Frame(
+      FixedSize(1200.0, 1200.0),
+      "Explore",
+      AtOrigin,
+      Some(Color.white),
+      ClearToBackground
+    )
 
     def transformer(values: Stream[Pure, ((Int, Int), Boolean)]) = {
-      val initial = GravityState(Vec(300.0, 0.degrees), Vec(3.0, 90.degrees), 0.1)
+      val initial =
+        GravityState(Vec(300.0, 0.degrees), Vec(3.0, 90.degrees), 0.1)
       values.scan(initial) { case (state, ((g, dt), reset)) =>
         if (reset) {
           initial
         } else {
-          gravitySim(state, dt / 100.0, g / 10.0) 
+          gravitySim(state, dt / 100.0, g / 10.0)
         }
       }
     }
 
-    explorer.exploreTransformed(transformer)(frame, { case GravityState(pos, _, _) =>
-      val planet = Image.circle(5.0).fillColor(Color.black).at(pos)
-      val sun = Image.circle(20.0).fillColor(Color.yellow)
+    explorer.exploreTransformed(transformer)(
+      frame,
+      { case GravityState(pos, _, _) =>
+        val planet = Image.circle(5.0).fillColor(Color.black).at(pos)
+        val sun = Image.circle(20.0).fillColor(Color.yellow)
 
-      Image.compile {
-        planet on sun
+        Image.compile {
+          planet on sun
+        }
       }
-    })
+    )
     // explorer.explore(frame, {
     //   case ((speed, time), angle) =>
     //     val startPos = Point(-550.0, 0.0)

@@ -50,13 +50,15 @@ class TestSuite extends CatsEffectSuite {
     def smiley(n: Int, size: Int): Image = {
       def builder(component: Image, size: Int) = {
         val smileSize = size.toDouble * 2.5
-        val smile = Image.interpolatingSpline(List(
-          Point.Polar(smileSize, -180.degrees), 
-          Point.Polar(smileSize * 0.8, -160.degrees), 
-          Point.Polar(smileSize * 0.4, -90.degrees), 
-          Point.Polar(smileSize * 0.8, -20.degrees), 
-          Point.Polar(smileSize, 0.degrees)
-        ))
+        val smile = Image.interpolatingSpline(
+          List(
+            Point.Polar(smileSize, -180.degrees),
+            Point.Polar(smileSize * 0.8, -160.degrees),
+            Point.Polar(smileSize * 0.4, -90.degrees),
+            Point.Polar(smileSize * 0.8, -20.degrees),
+            Point.Polar(smileSize, 0.degrees)
+          )
+        )
 
         val outline = Image.circle(smileSize * 3)
 
@@ -65,33 +67,41 @@ class TestSuite extends CatsEffectSuite {
         val smilePos = Point(0.0, -smileSize / 1)
         val outlinePos = Point(0.0, -size * 2)
 
-        (component.at(lEyePos))
+        (component
+          .at(lEyePos))
           .on(component.at(rEyePos))
-          .on(smile.at(smilePos)
-          .on(outline.at(outlinePos)))
+          .on(
+            smile
+              .at(smilePos)
+              .on(outline.at(outlinePos))
+          )
       }
 
-      (1 to n).foldLeft((Image.circle(size), size)) { case ((eye, size), _) => 
-        (builder(eye, size), size * 5)
-      }._1
+      (1 to n)
+        .foldLeft((Image.circle(size), size)) { case ((eye, size), _) =>
+          (builder(eye, size), size * 5)
+        }
+        ._1
     }
 
-    def explorer(using 
-      intGui: ExploreInt[Component], 
-      colorGui: ExploreColor[Component],
-      layout: Layout[Component]
+    def explorer(using
+        intGui: ExploreInt[Component],
+        colorGui: ExploreColor[Component],
+        layout: Layout[Component]
     ) = {
       import intGui._
       import colorGui._
       // import layout._
-      
+
       (int("Base Size") within (1 to 60) startingWith 10)
       ===
       (int("Iterations") within (1 to 5) startingWith 1)
       ===
       ((int("Stroke Width") within (1 to 20) startingWith 2))
       ===
-      ((int("X Offset") within (-1000 to 1000)) | (int("Y Offset") within (-1000 to 1000)))
+      ((int("X Offset") within (-1000 to 1000)) | (int(
+        "Y Offset"
+      ) within (-1000 to 1000)))
       ===
       (color("Background") withDefault Color.white)
       ===
@@ -107,17 +117,29 @@ class TestSuite extends CatsEffectSuite {
       //   )
     }
 
+    val frame = Frame(
+      FixedSize(1200.0, 1200.0),
+      "Explore",
+      CenteredOnPicture,
+      Some(Color.white),
+      ClearToBackground
+    )
 
-    val frame = Frame(FixedSize(1200.0, 1200.0), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
+    explorer.explore(
+      frame,
+      {
+        case (
+              ((((size, iterations), stroke), (xOffset, yOffset)), background),
+              foreground
+            ) =>
+          val smile =
+            smiley(iterations, size).strokeColor(foreground).strokeWidth(stroke)
+          val backgroundCircle = Image.circle(2400).fillColor(background)
 
-    explorer.explore(frame, { 
-      case (((((size, iterations), stroke), (xOffset, yOffset)), background), foreground) =>
-        val smile = smiley(iterations, size).strokeColor(foreground).strokeWidth(stroke)
-        val backgroundCircle = Image.circle(2400).fillColor(background)
-
-        Image.compile {
-          (smile at Point(xOffset, yOffset)) on backgroundCircle
-        }
-    })
+          Image.compile {
+            (smile at Point(xOffset, yOffset)) on backgroundCircle
+          }
+      }
+    )
   }
 }

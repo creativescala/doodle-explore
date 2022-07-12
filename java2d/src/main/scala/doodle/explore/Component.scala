@@ -13,12 +13,13 @@ import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
 import doodle.explore.ExploreButton
 
-
 enum Component[A] extends Explorer[Unit, A] {
-  case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int) extends Component[Int]
+  case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
+      extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
   case ButtonIR(label: String) extends Component[Boolean]
-  case LayoutIR[A, B](direction: Int, a: Component[A], b: Component[B]) extends Component[(A, B)]
+  case LayoutIR[A, B](direction: Int, a: Component[A], b: Component[B])
+      extends Component[(A, B)]
 
   private def toAwtColor(color: Color) = {
     val rgba = color.toRGBA
@@ -26,11 +27,11 @@ enum Component[A] extends Explorer[Unit, A] {
   }
 
   private def fromAwtColor(color: java.awt.Color) = Color.RGBA(
-    UnsignedByte((color.getRed - 128).toByte), 
+    UnsignedByte((color.getRed - 128).toByte),
     UnsignedByte((color.getGreen - 128).toByte),
     UnsignedByte((color.getBlue - 128).toByte),
-    Normalized(color.getAlpha.toDouble / 255.0),
-    )
+    Normalized(color.getAlpha.toDouble / 255.0)
+  )
 
   private def labelInput(label: String, ui: JComponent): JPanel = {
     val panel = new JPanel
@@ -72,7 +73,10 @@ enum Component[A] extends Explorer[Unit, A] {
       panel.add(label)
       panel.add(colorPicker)
 
-      (panel, Stream(initial).repeat.map(_ => colorPicker.getColor).map(fromAwtColor))
+      (
+        panel,
+        Stream(initial).repeat.map(_ => colorPicker.getColor).map(fromAwtColor)
+      )
 
     case ButtonIR(label) =>
       val button = JButton(label)
@@ -85,11 +89,14 @@ enum Component[A] extends Explorer[Unit, A] {
       }
       button.addActionListener(Listener)
 
-      (button, Stream(pressed).repeat.map(_ => {
-        val wasPressed = pressed
-        pressed = false
-        wasPressed
-      }))
+      (
+        button,
+        Stream(pressed).repeat.map(_ => {
+          val wasPressed = pressed
+          pressed = false
+          wasPressed
+        })
+      )
 
     case LayoutIR(direction, a, b) =>
       val (aUI, aValues) = a.runAndMakeUI
@@ -111,27 +118,31 @@ enum Component[A] extends Explorer[Unit, A] {
 implicit object IntInterpreter extends ExploreInt[Component] {
   import Component.IntIR
 
-  override def int(label: String) = 
+  override def int(label: String) =
     IntIR(label, None, 0)
 
-  override def within(generator: Component[Int], start: Int, end: Int) = generator match {
-    case generator: IntIR => generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
-  }
+  override def within(generator: Component[Int], start: Int, end: Int) =
+    generator match {
+      case generator: IntIR =>
+        generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
+    }
 
-  override def startingWith(generator: Component[Int], newInitial: Int) = generator match {
-    case generator: IntIR => generator.copy(initial = newInitial)
-  }
+  override def startingWith(generator: Component[Int], newInitial: Int) =
+    generator match {
+      case generator: IntIR => generator.copy(initial = newInitial)
+    }
 }
 
 implicit object ColorInterpreter extends ExploreColor[Component] {
   import Component.ColorIR
 
-  override def color(name: String) = 
+  override def color(name: String) =
     ColorIR(name, Color.black.asInstanceOf[Color])
 
-  override def withDefault(generator: Component[Color], initColor: Color) = generator match {
-    case generator: ColorIR => generator.copy(initColor = initColor)
-  }
+  override def withDefault(generator: Component[Color], initColor: Color) =
+    generator match {
+      case generator: ColorIR => generator.copy(initColor = initColor)
+    }
 }
 
 implicit object ButtonInterpreter extends ExploreButton[Component] {

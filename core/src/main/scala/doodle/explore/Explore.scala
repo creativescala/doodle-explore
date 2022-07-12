@@ -26,9 +26,10 @@ trait Explorer[F, A] {
   def explore = exploreTransformed(identity)
 
   def exploreTransformed[B](
-    transformer: Stream[Pure, A] => Stream[Pure, B]
+      transformer: Stream[Pure, A] => Stream[Pure, B]
   )(
-    frame: Frame, render: B => Picture[Unit]
+      frame: Frame,
+      render: B => Picture[Unit]
   ) = {
     val values = transformer(this.run)
 
