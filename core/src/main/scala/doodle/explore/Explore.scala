@@ -1,4 +1,5 @@
-package doodle.explore
+package doodle
+package explore
 
 import doodle.core._
 import doodle.image._
@@ -22,8 +23,14 @@ import cats.effect.IO
 trait Explorer[F, A] {
   def run: Stream[Pure, A]
 
-  def explore(frame: Frame, render: A => Picture[Unit]) = {
-    val values = this.run
+  def explore = exploreTransformed(identity)
+
+  def exploreTransformed[B](
+    transformer: Stream[Pure, A] => Stream[Pure, B]
+  )(
+    frame: Frame, render: B => Picture[Unit]
+  ) = {
+    val values = transformer(this.run)
 
     frame.canvas().flatMap { canvas =>
       val frames: Stream[IO, Picture[Unit]] = values.map(render)

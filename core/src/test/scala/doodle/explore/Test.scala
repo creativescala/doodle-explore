@@ -71,8 +71,8 @@ class TestSuite extends CatsEffectSuite {
           .on(outline.at(outlinePos)))
       }
 
-      (1 to n).foldLeft((Image.circle(size), size)) { case ((unit, size), _) => 
-        (builder(unit, size), size * 5)
+      (1 to n).foldLeft((Image.circle(size), size)) { case ((eye, size), _) => 
+        (builder(eye, size), size * 5)
       }._1
     }
 
@@ -84,23 +84,34 @@ class TestSuite extends CatsEffectSuite {
       import intGui._
       import colorGui._
       // import layout._
-
+      
       (int("Base Size") within (1 to 60) startingWith 10)
-        .above(int("Iterations") within (1 to 5) startingWith 1)
-        .above(int("Stroke Width") within (1 to 20) startingWith 2)
-        .above(color("Background") withDefault Color.white)
-        .above(color("Foreground") withDefault Color.black)
-        .above(
-          (int("X Offset").within(-1000 to 1000))
-            .beside(int("Y Offset").within(-1000 to 1000))
-        )
+      ===
+      (int("Iterations") within (1 to 5) startingWith 1)
+      ===
+      ((int("Stroke Width") within (1 to 20) startingWith 2))
+      ===
+      ((int("X Offset") within (-1000 to 1000)) | (int("Y Offset") within (-1000 to 1000)))
+      ===
+      (color("Background") withDefault Color.white)
+      ===
+      (color("Foreground") withDefault Color.black)
+      // (int("Base Size") within (1 to 60) startingWith 10)
+      //   .above(int("Iterations") within (1 to 5) startingWith 1)
+      //   .above(int("Stroke Width") within (1 to 20) startingWith 2)
+      //   .above(color("Background") withDefault Color.white)
+      //   .above(color("Foreground") withDefault Color.black)
+      //   .above(
+      //     (int("X Offset") within (-1000 to 1000))
+      //       .beside(int("Y Offset") within (-1000 to 1000))
+      //   )
     }
 
 
     val frame = Frame(FixedSize(1200.0, 1200.0), "Explore", CenteredOnPicture, Some(Color.white), ClearToBackground)
 
     explorer.explore(frame, { 
-      case ((((((size, iterations), stroke), background), foreground), (xOffset, yOffset))) =>
+      case (((((size, iterations), stroke), (xOffset, yOffset)), background), foreground) =>
         val smile = smiley(iterations, size).strokeColor(foreground).strokeWidth(stroke)
         val backgroundCircle = Image.circle(2400).fillColor(background)
 

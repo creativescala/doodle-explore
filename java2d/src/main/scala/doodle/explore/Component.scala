@@ -9,11 +9,15 @@ import fs2.Pure
 import doodle.explore.{ExploreInt, ExploreColor, Layout}
 import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
+import java.awt.event.ActionListener
+import java.awt.event.ActionEvent
+import doodle.explore.ExploreButton
 
 
 enum Component[A] extends Explorer[Unit, A] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int) extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
+  case ButtonIR(label: String) extends Component[Boolean]
   case LayoutIR[A, B](direction: Int, a: Component[A], b: Component[B]) extends Component[(A, B)]
 
   private def toAwtColor(color: Color) = {
@@ -70,6 +74,23 @@ enum Component[A] extends Explorer[Unit, A] {
 
       (panel, Stream(initial).repeat.map(_ => colorPicker.getColor).map(fromAwtColor))
 
+    case ButtonIR(label) =>
+      val button = JButton(label)
+
+      var pressed = false
+      object Listener extends ActionListener {
+        def actionPerformed(_e: ActionEvent) = {
+          pressed = true
+        }
+      }
+      button.addActionListener(Listener)
+
+      (button, Stream(pressed).repeat.map(_ => {
+        val wasPressed = pressed
+        pressed = false
+        wasPressed
+      }))
+
     case LayoutIR(direction, a, b) =>
       val (aUI, aValues) = a.runAndMakeUI
       val (bUI, bValues) = b.runAndMakeUI
@@ -111,6 +132,12 @@ implicit object ColorInterpreter extends ExploreColor[Component] {
   override def withDefault(generator: Component[Color], initColor: Color) = generator match {
     case generator: ColorIR => generator.copy(initColor = initColor)
   }
+}
+
+implicit object ButtonInterpreter extends ExploreButton[Component] {
+  import Component.ButtonIR
+
+  def button(label: String) = ButtonIR(label)
 }
 
 implicit object LayoutInterpreter extends Layout[Component] {

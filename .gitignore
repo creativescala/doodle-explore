@@ -11,3 +11,5 @@ metals.sbt
 .bloop
 
 .bsp/
+
+slinky/
