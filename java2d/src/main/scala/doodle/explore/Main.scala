@@ -84,12 +84,9 @@ object Main extends IOApp.Simple {
     ===
     int("DT").within(1 to 100).startingWith(16)
     ===
+    int("Start Velocity").within(0 to 100).startingWith(30)
+    ===
     button("Reset")
-//     int("Speed").within(1 to 40)
-//     ===
-//     int("Time").within(0 to 200).startingWith(0)
-//     ===
-//     int("Angle").within(0 to 90)
   }
 
   def run: IO[Unit] = {
@@ -101,47 +98,23 @@ object Main extends IOApp.Simple {
       ClearToBackground
     )
 
-    def transformer(values: Stream[Pure, ((Int, Int), Boolean)]) = {
-      val initial =
-        GravityState(Vec(300.0, 0.degrees), Vec(3.0, 90.degrees), 0.1)
-      values.scan(initial) { case (state, ((g, dt), reset)) =>
+    val initial = GravityState(Vec(300.0, 0.degrees), Vec(3.0, 90.degrees), 0.1)
+    val update: (GravityState, (((Int, Int), Int), Boolean)) => GravityState = {
+      case (state, (((g, dt), startVel), reset)) =>
         if (reset) {
-          initial
+          initial.copy(vel = Vec(startVel / 10.0, 90.degrees))
         } else {
           gravitySim(state, dt / 100.0, g / 10.0)
         }
-      }
     }
 
-    explorer.exploreTransformed(transformer)(
-      frame,
-      { case GravityState(pos, _, _) =>
-        val planet = Image.circle(5.0).fillColor(Color.black).at(pos)
-        val sun = Image.circle(20.0).fillColor(Color.yellow)
+    def render(state: GravityState) = {
+      val planet = Image.circle(5.0).fillColor(Color.black).at(state.pos)
+      val sun = Image.circle(20.0).fillColor(Color.yellow)
 
-        Image.compile {
-          planet on sun
-        }
-      }
-    )
-    // explorer.explore(frame, {
-    //   case ((speed, time), angle) =>
-    //     val startPos = Point(-550.0, 0.0)
-    //     val endPos = simulate(angle.degrees, speed, time)
+      planet on sun
+    }
 
-    //     val pathPoints = (0 to time) map { t =>
-    //       simulate(angle.degrees, speed, t)
-    //     }
-
-    //     val ball = Image.circle(10.0).fillColor(Color.red).at(endPos)
-    //     val startCircle = Image.circle(10.0).fillColor(Color.green)
-    //     val path = Image.interpolatingSpline(pathPoints).strokeColor(Color.black)
-
-    //     Image.compile {
-    //       (ball on startCircle on path) at startPos
-    //     }
-    // })
-
-    // IO.println("Hello sbt-typelevel!")
+    explorer.exploreWithState(initial, update)(frame, s => Image.compile(render(s)))
   }
 }

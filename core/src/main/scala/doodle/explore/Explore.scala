@@ -25,6 +25,9 @@ trait Explorer[F, A] {
 
   def explore = exploreTransformed(identity)
 
+  def exploreWithState[B](initial: B, scanner: (B, A) => B) =
+    exploreTransformed { stream => stream.scan(initial)(scanner) }
+
   def exploreTransformed[B](
       transformer: Stream[Pure, A] => Stream[Pure, B]
   )(
