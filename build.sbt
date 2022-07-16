@@ -62,15 +62,15 @@ lazy val js = crossProject(JSPlatform)
     scalaJSUseMainModuleInitializer := true,
     addCommandAlias(
       "dev",
-      ";jsJS/fastOptJS::startWebpackDevServer;~jsJS/fastOptJS"
+      ";jsJS/Compile/fastOptJS/startWebpackDevServer;~jsJS/fastOptJS"
     ),
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "2.7.0",
       "org.typelevel" %%% "cats-effect" % "3.3.12",
-      "me.shadaj" %%% "slinky-core" % "0.7.0",
-      "me.shadaj" %%% "slinky-web" % "0.7.0",
-      "me.shadaj" %%% "slinky-hot" % "0.7.0",
-      "me.shadaj" %%% "slinky-scalajsreact-interop" % "0.7.0",
+      "me.shadaj" %%% "slinky-core" % "0.7.2",
+      "me.shadaj" %%% "slinky-web" % "0.7.2",
+      "me.shadaj" %%% "slinky-hot" % "0.7.2",
+      "me.shadaj" %%% "slinky-scalajsreact-interop" % "0.7.2",
       "co.fs2" %% "fs2-core" % "3.2.8",
       "org.creativescala" %% "doodle" % "0.11.1",
       /* "org.creativescala" %%% "doodle-svg" % "0.9.23", */
@@ -104,7 +104,7 @@ lazy val js = crossProject(JSPlatform)
     Test / requireJsDomEnv := true,
     addCommandAlias("build", "fullOptJS::webpack")
   )
-  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
+  .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin, ScalaJSPlugin))
   .dependsOn(core)
 /* .dependsOn(slinky) */
 
