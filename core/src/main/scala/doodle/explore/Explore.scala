@@ -3,9 +3,9 @@ package explore
 
 import doodle.core._
 import doodle.image._
-import doodle.image.syntax._
 import doodle.image.syntax.all._
 import doodle.image.syntax.core._
+import doodle.interact.syntax.all._
 import doodle.java2d._
 
 import doodle.syntax.all.{RendererFrameOps, AngleIntOps}

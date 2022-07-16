@@ -30,7 +30,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
       "org.typelevel" %%% "cats-core" % "2.7.0",
       "org.typelevel" %%% "cats-effect" % "3.3.12",
       "co.fs2" %% "fs2-core" % "3.2.8",
-      "org.creativescala" %% "doodle" % "0.10.1",
+      "org.creativescala" %% "doodle" % "0.11.1",
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
     )
@@ -45,7 +45,7 @@ lazy val java2d = crossProject(JVMPlatform)
       "org.typelevel" %%% "cats-core" % "2.7.0",
       "org.typelevel" %%% "cats-effect" % "3.3.12",
       "co.fs2" %% "fs2-core" % "3.2.8",
-      "org.creativescala" %% "doodle" % "0.10.1",
+      "org.creativescala" %% "doodle" % "0.11.1",
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
     )
@@ -60,17 +60,19 @@ lazy val js = crossProject(JSPlatform)
   .settings(
     name := "doodle-explore-2",
     scalaJSUseMainModuleInitializer := true,
-    addCommandAlias("dev", ";jsJS/fastOptJS::startWebpackDevServer;~jsJS/fastOptJS"),
+    addCommandAlias(
+      "dev",
+      ";jsJS/fastOptJS::startWebpackDevServer;~jsJS/fastOptJS"
+    ),
     libraryDependencies ++= Seq(
       "org.typelevel" %%% "cats-core" % "2.7.0",
       "org.typelevel" %%% "cats-effect" % "3.3.12",
-
       "me.shadaj" %%% "slinky-core" % "0.7.0",
       "me.shadaj" %%% "slinky-web" % "0.7.0",
       "me.shadaj" %%% "slinky-hot" % "0.7.0",
       "me.shadaj" %%% "slinky-scalajsreact-interop" % "0.7.0",
       "co.fs2" %% "fs2-core" % "3.2.8",
-      "org.creativescala" %% "doodle" % "0.10.1",
+      "org.creativescala" %% "doodle" % "0.11.1",
       /* "org.creativescala" %%% "doodle-svg" % "0.9.23", */
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
@@ -104,7 +106,7 @@ lazy val js = crossProject(JSPlatform)
   )
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin))
   .dependsOn(core)
-  /* .dependsOn(slinky) */
+/* .dependsOn(slinky) */
 
 /* addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) */
 lazy val docs = project.in(file("site")).enablePlugins(TypelevelSitePlugin)
