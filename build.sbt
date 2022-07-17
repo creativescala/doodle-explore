@@ -77,29 +77,44 @@ lazy val js = crossProject(JSPlatform)
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
     ),
-    Compile / npmDependencies += "react" -> "16.13.1",
-    Compile / npmDependencies += "react-dom" -> "16.13.1",
-    Compile / npmDependencies += "react-proxy" -> "1.1.8",
-    Compile / npmDevDependencies += "file-loader" -> "6.2.0",
-    Compile / npmDevDependencies += "style-loader" -> "2.0.0",
-    Compile / npmDevDependencies += "css-loader" -> "5.2.6",
-    Compile / npmDevDependencies += "html-webpack-plugin" -> "4.5.1",
-    Compile / npmDevDependencies += "copy-webpack-plugin" -> "6.4.0",
-    Compile / npmDevDependencies += "webpack-merge" -> "5.8.0",
+    Compile / npmDependencies ++= Seq(
+      "react" -> "16.13.1",
+      "react-dom" -> "16.13.1",
+      "react-proxy" -> "1.1.8",
+      "file-loader" -> "6.2.0",
+      "style-loader" -> "2.0.0",
+      "css-loader" -> "5.2.6",
+      "html-webpack-plugin" -> "4.5.1",
+      "copy-webpack-plugin" -> "6.4.0",
+      "webpack-merge" -> "5.8.0"
+    ),
+    Compile / npmDevDependencies ++= Seq(
+      "file-loader" -> "6.0.0",
+      "style-loader" -> "1.2.1",
+      "css-loader" -> "3.5.3",
+      "html-webpack-plugin" -> "4.3.0",
+      "copy-webpack-plugin" -> "5.1.1",
+      "webpack-merge" -> "4.2.2",
+      "postcss-loader" -> "4.1.0",
+      "postcss" -> "8.2.6",
+      "tailwindcss" -> "2.0.1",
+      "autoprefixer" -> "10.0.2",
+      "react-icons" -> "4.1.0"
+    ),
     fastOptJS / webpack / version := "4.44.2",
     fastOptJS / startWebpackDevServer / version := "3.11.2",
-    /* fastOptJS / webpackResources := baseDirectory.value / "webpack" * "*", */
-    /* fastOptJS / webpackConfigFile := Some( */
-    /*   baseDirectory.value / "webpack" / "webpack-fastopt.config.js" */
-    /* ), */
-    /* fullOptJS / webpackConfigFile := Some( */
-    /*   baseDirectory.value / "webpack" / "webpack-opt.config.js" */
-    /* ), */
-    /* Test / webpackConfigFile := Some( */
-    /*   baseDirectory.value / "webpack" / "webpack-core.config.js" */
-    /* ), */
+    webpackResources := baseDirectory.value / "webpack" * "*",
+    fastOptJS / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-fastopt.config.js"
+    ),
     fastOptJS / webpackDevServerExtraArgs := Seq("--inline", "--hot"),
     fastOptJS / webpackBundlingMode := BundlingMode.LibraryOnly(),
+    fullOptJS / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-opt.config.js"
+    ),
+    Test / webpackConfigFile := Some(
+      baseDirectory.value / "webpack" / "webpack-core.config.js"
+    ),
     Compile / mainClass := Some("doodle.explore.js.Main"),
     Test / requireJsDomEnv := true,
     addCommandAlias("build", "fullOptJS::webpack")
