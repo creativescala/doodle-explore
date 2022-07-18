@@ -29,6 +29,8 @@ import slinky.web.ReactDOM
 import slinky.hot
 
 import org.scalajs.dom
+import slinky.core.ComponentWrapper
+import slinky.core.StatelessComponentWrapper
 
 enum JSComponent[A] extends Explorer[Unit, A] {
   case IntIR(n: Int) extends JSComponent[Int]
@@ -48,16 +50,11 @@ implicit object IntInterpreter extends ExploreInt[JSComponent] {
     IntIR(newInitial)
 }
 
-object SlinkyStuff {
-  import slinky.core._
-  import slinky.core.annotations.react
-  import slinky.web.html._
+object App extends StatelessComponentWrapper {
+  type Props = Unit
 
-  import scala.scalajs.js
-  import scala.scalajs.js.annotation.JSImport
-
-  @react class App extends StatelessComponent {
-    type Props = Unit
+  class Def(jsProps: scala.scalajs.js.Object) extends Definition(jsProps) {
+    import slinky.web.html._
 
     def render() = {
       div("test")
@@ -66,6 +63,8 @@ object SlinkyStuff {
 }
 
 object Main {
+  import scala.scalajs.js
+
   def explorer(using
       intGui: ExploreInt[JSComponent]
       // colorGui: ExploreColor[Component],
@@ -87,9 +86,8 @@ object Main {
     //   )
   }
 
-  @JSExportTopLevel("main")
-  def main(args: Array[String]) = {
-    if (LinkingInfo.developmentMode) {
+  def main(args: Array[String]): Unit = {
+    if (scala.scalajs.LinkingInfo.developmentMode) {
       hot.initialize()
     }
 
