@@ -60,7 +60,7 @@ object Main extends IOApp.Simple {
     finalPos
   }
 
-  case class GravityState(pos: Vec, vel: Vec, mass: Double)
+  case class GravityState(pos: Vec, vel: Vec, mass: Double, sunColor: Color)
   def gravitySim(state: GravityState, dt: Double, g: Double): GravityState = {
     val sunMass = 100.0
     val force = g * sunMass * state.mass / (state.pos.length * state.pos.length)
@@ -74,10 +74,12 @@ object Main extends IOApp.Simple {
 
   def explorer(using
       intGui: ExploreInt[Component],
+      choiceGui: ExploreChoice[Component],
       buttonGui: ExploreButton[Component],
       layout: Layout[Component]
   ) = {
     import intGui._
+    import choiceGui._
     import buttonGui._
 
     int("G").within(0 to 10).startingWith(1)
@@ -85,6 +87,15 @@ object Main extends IOApp.Simple {
     int("DT").within(1 to 100).startingWith(16)
     ===
     int("Start Velocity").within(0 to 100).startingWith(30)
+    ===
+    labeledChoice(
+      "Sun Color",
+      Seq(
+        ("Yellow" -> Color.yellow),
+        ("Red" -> Color.red),
+        ("Blue" -> Color.blue)
+      )
+    )
     ===
     button("Reset")
   }
@@ -98,23 +109,34 @@ object Main extends IOApp.Simple {
       ClearToBackground
     )
 
-    val initial = GravityState(Vec(300.0, 0.degrees), Vec(3.0, 90.degrees), 0.1)
-    val update: (GravityState, (((Int, Int), Int), Boolean)) => GravityState = {
-      case (state, (((g, dt), startVel), reset)) =>
+    val initial = GravityState(
+      Vec(300.0, 0.degrees),
+      Vec(3.0, 90.degrees),
+      0.1,
+      Color.yellow
+    )
+    val update: (
+        GravityState,
+        ((((Int, Int), Int), Color), Boolean)
+    ) => GravityState = {
+      case (state, ((((g, dt), startVel), newSunColor), reset)) =>
         if (reset) {
           initial.copy(vel = Vec(startVel / 10.0, 90.degrees))
         } else {
-          gravitySim(state, dt / 100.0, g / 10.0)
+          gravitySim(state, dt / 100.0, g / 10.0).copy(sunColor = newSunColor)
         }
     }
 
     def render(state: GravityState) = {
       val planet = Image.circle(5.0).fillColor(Color.black).at(state.pos)
-      val sun = Image.circle(20.0).fillColor(Color.yellow)
+      val sun = Image.circle(20.0).fillColor(state.sunColor).strokeWidth(0.0)
 
       planet on sun
     }
 
-    explorer.exploreWithState(initial, update)(frame, s => Image.compile(render(s)))
+    explorer.exploreWithState(initial, update)(
+      frame,
+      s => Image.compile(render(s))
+    )
   }
 }

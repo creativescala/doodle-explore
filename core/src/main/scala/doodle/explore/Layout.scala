@@ -1,5 +1,9 @@
 package doodle.explore
 
+/** Describes a DSL for setting the layout of a given [[Explorer]] component.
+  * These functions can be used with dot or infix notation through
+  * [[LayoutOps]].
+  */
 trait Layout[F[_]] {
   def above[A, B](top: F[A], bottom: F[B]): F[(A, B)]
   def beside[A, B](left: F[A], right: F[B]): F[(A, B)]

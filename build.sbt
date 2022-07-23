@@ -19,7 +19,7 @@ val Scala312 = "3.1.2"
 ThisBuild / crossScalaVersions := Seq(Scala312 /*, "2.13.8"*/ )
 ThisBuild / scalaVersion := Scala312 // the default Scala
 
-lazy val root = tlCrossRootProject.aggregate(core, js)
+lazy val root = tlCrossRootProject.aggregate(core, java2d, js)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -121,7 +121,25 @@ lazy val js = crossProject(JSPlatform)
   )
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin, ScalaJSPlugin))
   .dependsOn(core)
-/* .dependsOn(slinky) */
+
+lazy val laminar = crossProject(JSPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("laminar"))
+  .settings(
+    name := "doodle-explore-2",
+    scalaJSUseMainModuleInitializer := true,
+    Compile / mainClass := Some("doodle.explore.laminar.Main"),
+    libraryDependencies ++= Seq(
+      "org.typelevel" %%% "cats-core" % "2.7.0",
+      "org.typelevel" %%% "cats-effect" % "3.3.12",
+      "co.fs2" %%% "fs2-core" % "3.2.8",
+      "org.creativescala" %% "doodle" % "0.11.1",
+      "org.scalameta" %%% "munit" % "0.7.29" % Test,
+      "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test,
+      "com.raquo" %%% "laminar" % "0.13.1"
+    )
+  )
+  .dependsOn(core)
 
 /* addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) */
 lazy val docs = project.in(file("site")).enablePlugins(TypelevelSitePlugin)

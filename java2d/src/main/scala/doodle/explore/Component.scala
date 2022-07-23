@@ -6,18 +6,22 @@ import javax.swing._
 import fs2.Stream
 import fs2.Pure
 
-import doodle.explore.{ExploreInt, ExploreColor, Layout}
+import doodle.explore.{ExploreInt, ExploreColor, ExploreChoice, Layout}
 import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
 import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
 import doodle.explore.ExploreButton
 
-enum Component[A] extends Explorer[Unit, A] {
+/** An explore GUI element for the Java2D backend
+  */
+enum Component[A] extends Explorer[A] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
       extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
   case ButtonIR(label: String) extends Component[Boolean]
+  case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
+      extends Component[A]
   case LayoutIR[A, B](direction: Int, a: Component[A], b: Component[B])
       extends Component[(A, B)]
 
@@ -98,6 +102,26 @@ enum Component[A] extends Explorer[Unit, A] {
         })
       )
 
+    case ChoiceIR(name, choices, labels) =>
+      import collection.JavaConverters.seqAsJavaListConverter
+      val panel = new JPanel
+      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
+
+      val label = JLabel(name)
+      val comboBox = JComboBox(new java.util.Vector(labels.asJava))
+
+      panel.add(label)
+      panel.add(comboBox)
+
+      val labelToChoice = labels.zip(choices).toMap
+
+      (
+        panel,
+        Stream(choices(0)).repeat
+          .map(_ => comboBox.getSelectedItem.asInstanceOf[String])
+          .map(labelToChoice)
+      )
+
     case LayoutIR(direction, a, b) =>
       val (aUI, aValues) = a.runAndMakeUI
       val (bUI, bValues) = b.runAndMakeUI
@@ -116,7 +140,7 @@ enum Component[A] extends Explorer[Unit, A] {
 }
 
 implicit object IntInterpreter extends ExploreInt[Component] {
-  import Component.IntIR
+  import Component.{IntIR, ChoiceIR}
 
   override def int(label: String) =
     IntIR(label, None, 0)
@@ -125,23 +149,36 @@ implicit object IntInterpreter extends ExploreInt[Component] {
     generator match {
       case generator: IntIR =>
         generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
+      case _ => ???
     }
 
   override def startingWith(generator: Component[Int], newInitial: Int) =
     generator match {
-      case generator: IntIR => generator.copy(initial = newInitial)
+      case generator: IntIR         => generator.copy(initial = newInitial)
+      case generator: ChoiceIR[Int] => ???
     }
 }
 
+implicit object ChoiceInterpreter extends ExploreChoice[Component] {
+  import Component.ChoiceIR
+
+  override def choice[A](label: String, choices: Seq[A]) =
+    ChoiceIR(label, choices, choices.map(_.toString))
+
+  override def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
+    ChoiceIR(label, choices.map(_._2), choices.map(_._1))
+}
+
 implicit object ColorInterpreter extends ExploreColor[Component] {
-  import Component.ColorIR
+  import Component.{ColorIR, ChoiceIR}
 
   override def color(name: String) =
     ColorIR(name, Color.black.asInstanceOf[Color])
 
   override def withDefault(generator: Component[Color], initColor: Color) =
     generator match {
-      case generator: ColorIR => generator.copy(initColor = initColor)
+      case generator: ColorIR         => generator.copy(initColor = initColor)
+      case generator: ChoiceIR[Color] => ???
     }
 }
 

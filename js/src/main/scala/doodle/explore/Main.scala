@@ -32,7 +32,7 @@ import org.scalajs.dom
 import slinky.core.ComponentWrapper
 import slinky.core.StatelessComponentWrapper
 
-enum JSComponent[A] extends Explorer[Unit, A] {
+enum JSComponent[A] extends Explorer[A] {
   case IntIR(n: Int) extends JSComponent[Int]
 
   def run: Stream[Pure, A] = this match {
@@ -75,15 +75,6 @@ object Main {
     // import layout._
 
     int("Base Size").within(1 to 60).startingWith(10)
-    // (int("Base Size") within (1 to 60) startingWith 10)
-    //   .above(int("Iterations") within (1 to 5) startingWith 1)
-    //   .above(int("Stroke Width") within (1 to 20) startingWith 2)
-    //   .above(color("Background") withDefault Color.white)
-    //   .above(color("Foreground") withDefault Color.black)
-    //   .above(
-    //     (int("X Offset") within (-1000 to 1000))
-    //       .beside(int("Y Offset") within (-1000 to 1000))
-    //   )
   }
 
   def main(args: Array[String]): Unit = {
