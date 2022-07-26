@@ -18,6 +18,6 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    explorer.explore
+    explorer.run.take(100).map(x => println(x)).compile.drain
   }
 }
