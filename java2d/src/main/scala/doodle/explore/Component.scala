@@ -11,11 +11,19 @@ import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
 import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
+import doodle.java2d
 import doodle.explore.ExploreButton
 
 /** An explore GUI element for the Java2D backend
   */
-enum Component[A] extends Explorer[A] {
+enum Component[A]
+    extends Explorer[
+      A,
+      java2d.Drawing,
+      java2d.Algebra,
+      java2d.Canvas,
+      java2d.Frame
+    ] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
       extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]

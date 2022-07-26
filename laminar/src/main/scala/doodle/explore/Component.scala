@@ -9,18 +9,32 @@ import fs2.Pure
 import doodle.explore.Explorer
 import doodle.explore.ExploreInt
 
-enum Component[A] extends Explorer[A] {
+import scala.concurrent.duration.DurationInt
+import cats.effect.GenTemporal
+import scala.scalajs.js
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.scalajs.js.Promise
+import java.util.concurrent.Future
+
+import doodle.svg.{Drawing, Algebra, Canvas, Frame}
+
+enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
       extends Component[Int]
 
   def run: Stream[Pure, A] = this match {
     case IntIR(label, bounds, initial) =>
+      val currentValue = Var(initial.toString)
       documentEvents.onDomContentLoaded.foreach { _ =>
         val container = dom.document.querySelector("#container")
-        val app = div("test")
+        val app = div(
+          input(typ("range"), onInput.mapToValue --> currentValue),
+          span(child.text <-- currentValue)
+        )
         render(container, app)
       }(unsafeWindowOwner)
-      Stream(0).repeat
+
+      Stream(0).repeat.map(_ => currentValue.now().toInt)
   }
 }
 
