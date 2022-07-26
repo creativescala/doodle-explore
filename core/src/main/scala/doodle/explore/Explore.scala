@@ -67,8 +67,9 @@ trait Explorer[A, F[_], Alg[x[_]] <: Algebra[x], Canvas, Frame] {
     val values = transformer(this.run)
     val frames = values.map(render)
 
-    frame.canvas().flatMap { canvas =>
+    import cats.effect.unsafe.implicits.global
+    (frame.canvas().flatMap { canvas =>
       frames.animateWithCanvasToIO(canvas)
-    }
+    }).unsafeRunAsync(x => System.err.println(x))
   }
 }

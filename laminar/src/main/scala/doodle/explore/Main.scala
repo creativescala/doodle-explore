@@ -25,6 +25,8 @@ import doodle.explore.laminar.Component
 
 import doodle.interact.effect.AnimationRenderer
 import doodle.effect.Renderer
+import doodle.svg.effect.Frame
+import doodle.svg.effect.Size.FixedSize
 
 object Main {
   def explorer(using intGui: ExploreInt[Component]) = {
@@ -37,17 +39,12 @@ object Main {
     import org.scalajs.dom
     import org.scalajs.dom.document
     import cats.effect.unsafe.implicits.global
-    val vals = explorer.run.take(100).map(x => println(x)).compile.drain
-    // val frame = Frame(
-    //   ???, // FixedSize(1200.0, 1200.0),
-    //   "Explore",
-    //   ???, // AtOrigin,
-    //   Some(Color.white),
-    //   ???, // ClearToBackground
-    // )
+    val frame = Frame("doodle")
 
-    // explorer.explore(frame, radius => Image.compile {
-    //   Image.circle(radius)
-    // })
+    import doodle.svg.svgAnimationRenderer
+    import doodle.svg.svgRenderer
+    explorer.explore(frame, radius => Image.compile {
+      Image.circle(radius).strokeColor(Color.black).strokeWidth(10.0)
+    })
   }
 }
