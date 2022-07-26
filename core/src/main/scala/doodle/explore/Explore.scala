@@ -26,7 +26,7 @@ import doodle.effect.Renderer
   * GUI for a given backend. The reference example is
   * [[doodle.explore.java2d.Component]]
   */
-trait Explorer[A] {
+trait Explorer[A, F[_], Alg[x[_]] <: Algebra[x], Canvas, Frame] {
 
   /** [[run]] instantiates the GUI and returns a stream of its values.
     */
@@ -36,23 +36,21 @@ trait Explorer[A] {
     * initializes the frame, and produces an animation using the render function
     * and values from the GUI.
     */
-  def explore[Canvas, Alg[x[_]] <: Algebra[x], F[_], Frame](using
+  def explore(using
       a: AnimationRenderer[Canvas],
       r: Renderer[Alg, F, Frame, Canvas]
   ) =
-    exploreTransformed[A, Canvas, Alg, F, Frame](identity)
+    exploreTransformed(identity)
 
   // /** Like [[explore]], but instead of running `render` directly on the values
   //   * produced by the GUI, [[exploreWithState]] uses the `scanner` function to
   //   * update the `initial` state tick-by-tick.
   //   */
-  def exploreWithState[B, Canvas, Alg[x[_]] <: Algebra[x], F[
-      _
-  ], Frame](initial: B, scanner: (B, A) => B)(using
+  def exploreWithState[B](initial: B, scanner: (B, A) => B)(using
       a: AnimationRenderer[Canvas],
       r: Renderer[Alg, F, Frame, Canvas]
   ) =
-    exploreTransformed[B, Canvas, Alg, F, Frame] { stream =>
+    exploreTransformed { stream =>
       stream.scan(initial)(scanner)
     }
 
@@ -60,9 +58,7 @@ trait Explorer[A] {
   /** [[exploreTransformed]] is a more generic [[explore]] function. It runs
     * `transformer` on the GUI's values before rendering them.
     */
-  def exploreTransformed[B, Canvas, Alg[x[_]] <: Algebra[x], F[
-      _
-  ], Frame](
+  def exploreTransformed[B](
       transformer: Stream[Pure, A] => Stream[Pure, B]
   )(frame: Frame, render: B => Picture[Alg, F, Unit])(using
       a: AnimationRenderer[Canvas],
@@ -71,8 +67,9 @@ trait Explorer[A] {
     val values = transformer(this.run)
     val frames = values.map(render)
 
-    frame.canvas().flatMap { canvas =>
+    import cats.effect.unsafe.implicits.global
+    (frame.canvas().flatMap { canvas =>
       frames.animateWithCanvasToIO(canvas)
-    }
+    }).unsafeRunAsync(x => System.err.println(x))
   }
 }

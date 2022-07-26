@@ -16,9 +16,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.Promise
 import java.util.concurrent.Future
 
-// import doodle.svg.{Drawing, Algebra, Canvas, Frame}
+import doodle.svg.{Drawing, Algebra, Canvas, Frame}
 
-enum Component[A] extends Explorer[A] {
+enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
       extends Component[Int]
 

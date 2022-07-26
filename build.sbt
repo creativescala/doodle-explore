@@ -19,7 +19,7 @@ val Scala312 = "3.1.2"
 ThisBuild / crossScalaVersions := Seq(Scala312 /*, "2.13.8"*/ )
 ThisBuild / scalaVersion := Scala312 // the default Scala
 
-lazy val root = tlCrossRootProject.aggregate(core, java2d, js)
+lazy val root = tlCrossRootProject.aggregate(core, java2d, js, doodle_svg)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
@@ -51,8 +51,6 @@ lazy val java2d = crossProject(JVMPlatform)
     )
   )
   .dependsOn(core)
-
-lazy val slinky = crossProject(JSPlatform).in(file("slinky"))
 
 lazy val js = crossProject(JSPlatform)
   .crossType(CrossType.Pure)
@@ -122,6 +120,11 @@ lazy val js = crossProject(JSPlatform)
   .jsConfigure(_.enablePlugins(ScalaJSBundlerPlugin, ScalaJSPlugin))
   .dependsOn(core)
 
+lazy val doodle_svg = crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("doodle-svg"))
+    .dependsOn(core)
+
 lazy val laminar = crossProject(JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("laminar"))
@@ -133,13 +136,14 @@ lazy val laminar = crossProject(JSPlatform)
       "org.typelevel" %%% "cats-core" % "2.7.0",
       "org.typelevel" %%% "cats-effect" % "3.3.12",
       "co.fs2" %%% "fs2-core" % "3.2.8",
-      "org.creativescala" %% "doodle" % "0.11.1",
+      "org.creativescala" %%% "doodle" % "0.11.1",
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test,
-      "com.raquo" %%% "laminar" % "0.13.1"
+      "com.raquo" %%% "laminar" % "0.14.2",
+      "svg" %%% "doodle-svg" % "0.1.0-SNAPSHOT",
     )
   )
-  .dependsOn(core)
+  .dependsOn(core, doodle_svg)
 
 /* addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) */
 lazy val docs = project.in(file("site")).enablePlugins(TypelevelSitePlugin)
