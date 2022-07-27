@@ -13,6 +13,7 @@ import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
 import doodle.java2d
 import doodle.explore.ExploreButton
+import doodle.explore.LayoutDirection
 
 /** An explore GUI element for the Java2D backend
   */
@@ -30,7 +31,7 @@ enum Component[A]
   case ButtonIR(label: String) extends Component[Boolean]
   case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
       extends Component[A]
-  case LayoutIR[A, B](direction: Int, a: Component[A], b: Component[B])
+  case LayoutIR[A, B](direction: LayoutDirection, a: Component[A], b: Component[B])
       extends Component[(A, B)]
 
   private def toAwtColor(color: Color) = {
@@ -133,7 +134,11 @@ enum Component[A]
     case LayoutIR(direction, a, b) =>
       val (aUI, aValues) = a.runAndMakeUI
       val (bUI, bValues) = b.runAndMakeUI
-      (dualBoxLayout(direction, aUI, bUI), aValues.zip(bValues))
+      val directionInt = direction match {
+        case LayoutDirection.Horizontal => BoxLayout.X_AXIS
+        case LayoutDirection.Vertical => BoxLayout.Y_AXIS,
+      }
+      (dualBoxLayout(directionInt, aUI, bUI), aValues.zip(bValues))
   }
 
   def run: Stream[Pure, A] = {
@@ -200,8 +205,8 @@ implicit object LayoutInterpreter extends Layout[Component] {
   import Component.LayoutIR
 
   def above[A, B](top: Component[A], bottom: Component[B]) =
-    LayoutIR(BoxLayout.Y_AXIS, top, bottom)
+    LayoutIR(LayoutDirection.Vertical, top, bottom)
 
   def beside[A, B](left: Component[A], right: Component[B]) =
-    LayoutIR(BoxLayout.X_AXIS, left, right)
+    LayoutIR(LayoutDirection.Horizontal, left, right)
 }

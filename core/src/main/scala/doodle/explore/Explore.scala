@@ -73,3 +73,8 @@ trait Explorer[A, F[_], Alg[x[_]] <: Algebra[x], Canvas, Frame] {
     }).unsafeRunAsync(x => System.err.println(x))
   }
 }
+
+enum LayoutDirection {
+  case Vertical
+  case Horizontal
+}

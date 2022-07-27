@@ -34,19 +34,25 @@ import cats.effect.unsafe.implicits.global
 
 import doodle.svg.svgAnimationRenderer
 import doodle.svg.svgRenderer
+import doodle.explore.Layout
+import doodle.explore.LayoutOps._
+import doodle.explore.ExploreColor
 
 object Main {
-  def explorer(using intGui: ExploreInt[Component]) = {
+  def explorer(using intGui: ExploreInt[Component], colorGui: ExploreColor[Component], layoutGui: Layout[Component]) = {
     import intGui._
+    import colorGui._
 
     int("Test")
+    ===
+    color("Test 2")
   }
 
   def main(args: Array[String]): Unit = {
     val frame = Frame("doodle")
 
-    explorer.explore(frame, radius => Image.compile {
-      Image.circle(radius).strokeColor(Color.black).strokeWidth(10.0)
+    explorer.explore(frame, (radius, idk) => Image.compile {
+      Image.circle(radius).strokeColor(idk).strokeWidth(10.0)
     })
   }
 }
