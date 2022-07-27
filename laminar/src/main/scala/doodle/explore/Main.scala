@@ -38,14 +38,13 @@ import doodle.svg.svgRenderer
 import doodle.explore.Layout
 import doodle.explore.LayoutOps._
 import doodle.explore.ExploreColor
-import doodle.image.examples.CreativeScala.sierpinski
 
 import doodle.image.Image
 
-object Main {
+object Fractals {
   def sierpinski(n: Int, size: Int): Image = {
     def builder(component: Image) = {
-      component above(
+      component above (
         component beside component
       )
     }
@@ -82,37 +81,44 @@ object Main {
           smile
             .at(smilePos)
             .on(outline)
-          )
+        )
     }
 
     (1 to n)
       .foldLeft((Image.circle(size), size)) { case ((eye, size), _) =>
         (builder(eye, size), size * 5)
       }
-        ._1
+      ._1
   }
 
   def runFractal(frame: Frame, fractalFn: (Int, Int) => Image) = {
-    fractalExplorer.explore(frame, { case ((size, iterations), strokeColor) => Image.compile {
-      fractalFn(iterations, size).strokeColor(strokeColor)
-    }})
+    fractalExplorer.explore(
+      frame,
+      { case ((size, iterations), strokeColor) =>
+        Image.compile {
+          fractalFn(iterations, size).strokeColor(strokeColor)
+        }
+      }
+    )
   }
 
   def fractalExplorer(using
-    intGui: ExploreInt[Component],
-    colorGui: ExploreColor[Component],
-    layoutGui: Layout[Component]
-    ) = {
-      import intGui._
-      import colorGui._
+      intGui: ExploreInt[Component],
+      colorGui: ExploreColor[Component],
+      layoutGui: Layout[Component]
+  ) = {
+    import intGui._
+    import colorGui._
 
-      int("Size").within(1 to 30).startingWith(10)
-      ===
-      int("Iterations").within(1 to 7).startingWith(1)
-      ===
-      color("Stroke Color")
+    int("Size").within(1 to 30).startingWith(10)
+    ===
+    int("Iterations").within(1 to 7).startingWith(1)
+    ===
+    color("Stroke Color")
   }
+}
 
+object Gravity {
   case class GravityState(pos: Vec, vel: Vec, mass: Double, sunColor: Color)
   def gravitySim(state: GravityState, dt: Double, g: Double): GravityState = {
     val sunMass = 100.0
@@ -161,8 +167,8 @@ object Main {
       Color.yellow
     )
     val update: (
-      GravityState,
-      ((((Int, Int), Int), Color), Boolean)
+        GravityState,
+        ((((Int, Int), Int), Color), Boolean)
     ) => GravityState = {
       case (state, ((((g, dt), startVel), newSunColor), reset)) =>
         if (reset) {
@@ -179,9 +185,14 @@ object Main {
       planet on sun
     }
 
-    gravityExplorer.exploreWithState(initial, update)(frame, s => Image.compile(render(s)))
+    gravityExplorer.exploreWithState(initial, update)(
+      frame,
+      s => Image.compile(render(s))
+    )
   }
+}
 
+object Main {
   def main(args: Array[String]): Unit = {
     val container = dom.document.querySelector("#container")
     val frame = Frame("doodle")
@@ -191,20 +202,24 @@ object Main {
         option("Sierpinski"),
         option("Smiley"),
         option("Gravity"),
-        inContext { node => onChange.mapTo(node.ref.value) --> { choice =>
-          dom.document.querySelector("#doodle").innerHTML = ""
-          dom.document.querySelector("#explorer").innerHTML = ""
-          choice match {
-            case "Sierpinski" => runFractal(frame, sierpinski)
-            case "Smiley" => runFractal(frame, smiley)
-            case "Gravity" => runGravitySim(frame.size(800, 800))
-          },
-        }})
+        inContext { node =>
+          onChange.mapTo(node.ref.value) --> { choice =>
+            dom.document.querySelector("#doodle").innerHTML = ""
+            dom.document.querySelector("#explorer").innerHTML = ""
+            choice match {
+              case "Sierpinski" =>
+                Fractals.runFractal(frame, Fractals.sierpinski)
+              case "Smiley"  => Fractals.runFractal(frame, Fractals.smiley)
+              case "Gravity" => Gravity.runGravitySim(frame.size(800, 800))
+            },
+          }
+        }
       )
+    )
 
     documentEvents.onDomContentLoaded.foreach { _ =>
       render(container, app)
-      runFractal(frame, sierpinski)
+      Fractals.runFractal(frame, Fractals.sierpinski)
     }(unsafeWindowOwner)
   }
 }

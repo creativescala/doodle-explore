@@ -31,7 +31,8 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
       extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
   case ButtonIR(label: String) extends Component[Boolean]
-  case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String]) extends Component[A]
+  case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
+      extends Component[A]
   case LayoutIR[A, B](
       direction: LayoutDirection,
       a: Component[A],
@@ -131,7 +132,9 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
         val app = div(
           span(label),
           select(
-            inContext { node => onChange.mapTo(node.ref.value) --> currentValue.writer },
+            inContext { node =>
+              onChange.mapTo(node.ref.value) --> currentValue.writer
+            },
             choiceLabels.map(label => option(value := label, label))
           )
         )
@@ -221,8 +224,10 @@ implicit object ButtonInterpreter extends ExploreButton[Component] {
 implicit object ChoiceInterpreter extends ExploreChoice[Component] {
   import Component.ChoiceIR
 
-  def choice[A](label: String, choices: Seq[A]) = ChoiceIR(label, choices, choices.map(_.toString))
-  def labeledChoice[A](label: String, choices: Seq[(String, A)]) = ChoiceIR(label, choices.map(_._2), choices.map(_._1))
+  def choice[A](label: String, choices: Seq[A]) =
+    ChoiceIR(label, choices, choices.map(_.toString))
+  def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
+    ChoiceIR(label, choices.map(_._2), choices.map(_._1))
 }
 
 implicit object LayoutInterpreter extends Layout[Component] {
