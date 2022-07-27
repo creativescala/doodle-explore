@@ -67,10 +67,19 @@ lazy val laminar = crossProject(JSPlatform)
       "org.scalameta" %%% "munit" % "0.7.29" % Test,
       "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test,
       "com.raquo" %%% "laminar" % "0.14.2",
-      "svg" %%% "doodle-svg" % "0.1.0-SNAPSHOT"
+      "svg" %%% "doodle-svg" % "0.1.0-SNAPSHOT",
     )
   )
   .dependsOn(core)
+
+/* lazy val buildLaminarExample = taskKey[String]("Builds a doodle-explore laminar example") */
+/* import complete.DefaultParsers._ */
+/* buildLaminarExample := { */
+/*     val args = spaceDelimited("<arg>").parsed */
+/*     laminar.js / Compile / mainClass := Some(sys.env("MainClass")) */
+/*     (laminar.js / Compile / fullOptJS).value */
+/*     "test" */
+/* } */
 
 /* addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) */
 lazy val docs = project.in(file("site")).enablePlugins(TypelevelSitePlugin)

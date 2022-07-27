@@ -7,7 +7,7 @@ import fs2.Stream
 import fs2.Pure
 
 import doodle.explore.Explorer
-import doodle.explore.ExploreInt
+import doodle.explore.{ExploreInt, ExploreButton, ExploreChoice}
 
 import scala.concurrent.duration.DurationInt
 import cats.effect.GenTemporal
@@ -30,6 +30,8 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
       extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
+  case ButtonIR(label: String) extends Component[Boolean]
+  case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String]) extends Component[A]
   case LayoutIR[A, B](
       direction: LayoutDirection,
       a: Component[A],
@@ -99,7 +101,7 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
         val currentValue = Var(colorToHex(initColor))
         val app = div(
           span(label),
-          input(typ("color"), onInput.mapToValue --> currentValue),
+          input(typ := "color", onInput.mapToValue --> currentValue),
           span(child.text <-- currentValue)
         )
 
@@ -108,6 +110,44 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
           // println(hexToColor(currentValue.now()))
           hexToColor(currentValue.now())
         })
+        (values, app)
+
+      case ButtonIR(label) =>
+        val currentValue = Var(false)
+        val app = div(button(onClick.mapTo(true) --> currentValue, label))
+
+        val values = Stream(false).repeat.map(_ => {
+          val wasPressed = currentValue.now()
+          currentValue.set(false)
+          wasPressed
+        })
+
+        (values, app)
+
+      case ChoiceIR(label, choices, choiceLabels) =>
+        val currentValue = Var(choiceLabels(0))
+        val lastValidValue = Var(choiceLabels(0))
+        val labelToChoice = choiceLabels.zip(choices).toMap
+        val app = div(
+          span(label),
+          select(
+            inContext { node => onChange.mapTo(node.ref.value) --> currentValue.writer },
+            choiceLabels.map(label => option(value := label, label))
+          )
+        )
+
+        val values = Stream(choices(0)).repeat.map { _ =>
+          val label = currentValue.now() match {
+            case null => lastValidValue.now()
+            case value => {
+              lastValidValue.set(value)
+              value
+            }
+          }
+
+          labelToChoice(label)
+        }
+
         (values, app)
 
       case LayoutIR(direction, a, b) =>
@@ -127,9 +167,7 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
     val (values, ui) = runAndMakeUI
     val container = dom.document.querySelector("#explorer")
 
-    documentEvents.onDomContentLoaded.foreach { _ =>
-      render(container, ui)
-    }(unsafeWindowOwner)
+    render(container, ui)
 
     values
   }
@@ -172,6 +210,19 @@ implicit object ColorInterpreter extends ExploreColor[Component] {
     generator match {
       case generator: ColorIR => generator.copy(initColor = initColor)
     }
+}
+
+implicit object ButtonInterpreter extends ExploreButton[Component] {
+  import Component.ButtonIR
+
+  override def button(label: String) = ButtonIR(label)
+}
+
+implicit object ChoiceInterpreter extends ExploreChoice[Component] {
+  import Component.ChoiceIR
+
+  def choice[A](label: String, choices: Seq[A]) = ChoiceIR(label, choices, choices.map(_.toString))
+  def labeledChoice[A](label: String, choices: Seq[(String, A)]) = ChoiceIR(label, choices.map(_._2), choices.map(_._1))
 }
 
 implicit object LayoutInterpreter extends Layout[Component] {
