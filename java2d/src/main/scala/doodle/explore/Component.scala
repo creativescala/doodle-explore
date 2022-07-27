@@ -31,8 +31,11 @@ enum Component[A]
   case ButtonIR(label: String) extends Component[Boolean]
   case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
       extends Component[A]
-  case LayoutIR[A, B](direction: LayoutDirection, a: Component[A], b: Component[B])
-      extends Component[(A, B)]
+  case LayoutIR[A, B](
+      direction: LayoutDirection,
+      a: Component[A],
+      b: Component[B]
+  ) extends Component[(A, B)]
 
   private def toAwtColor(color: Color) = {
     val rgba = color.toRGBA
@@ -136,7 +139,7 @@ enum Component[A]
       val (bUI, bValues) = b.runAndMakeUI
       val directionInt = direction match {
         case LayoutDirection.Horizontal => BoxLayout.X_AXIS
-        case LayoutDirection.Vertical => BoxLayout.Y_AXIS,
+        case LayoutDirection.Vertical   => BoxLayout.Y_AXIS,
       }
       (dualBoxLayout(directionInt, aUI, bUI), aValues.zip(bValues))
   }

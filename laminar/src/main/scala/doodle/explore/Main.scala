@@ -39,7 +39,11 @@ import doodle.explore.LayoutOps._
 import doodle.explore.ExploreColor
 
 object Main {
-  def explorer(using intGui: ExploreInt[Component], colorGui: ExploreColor[Component], layoutGui: Layout[Component]) = {
+  def explorer(using
+      intGui: ExploreInt[Component],
+      colorGui: ExploreColor[Component],
+      layoutGui: Layout[Component]
+  ) = {
     import intGui._
     import colorGui._
 
@@ -51,8 +55,12 @@ object Main {
   def main(args: Array[String]): Unit = {
     val frame = Frame("doodle")
 
-    explorer.explore(frame, (radius, idk) => Image.compile {
-      Image.circle(radius).strokeColor(idk).strokeWidth(10.0)
-    })
+    explorer.explore(
+      frame,
+      (radius, idk) =>
+        Image.compile {
+          Image.circle(radius).strokeColor(idk).strokeWidth(10.0)
+        }
+    )
   }
 }
