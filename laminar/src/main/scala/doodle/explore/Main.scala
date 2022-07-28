@@ -4,7 +4,13 @@ import doodle.core._
 import doodle.image._
 import doodle.image.syntax.core._
 
-import doodle.explore.{ExploreInt, ExploreChoice, ExploreButton, ExploreColor, Layout}
+import doodle.explore.{
+  ExploreInt,
+  ExploreChoice,
+  ExploreButton,
+  ExploreColor,
+  Layout
+}
 import doodle.explore.IntComponentOps._
 import doodle.explore.LayoutOps._
 
@@ -169,6 +175,62 @@ object Gravity {
   }
 }
 
+object Tree {
+  def treeExplorer(using
+      intGui: ExploreInt[Component],
+      layout: Layout[Component]
+  ) = {
+    import intGui._
+
+    int("Depth").within(1 to 12).startingWith(3)
+    ===
+    int("Length").within(1 to 2500).startingWith(500)
+  }
+
+  def runTree(frame: Frame) = {
+    treeExplorer.explore(
+      frame,
+      { case (depth, length) =>
+        Image.compile {
+          doodle.image.examples.Tree.branch(depth, 0.degrees, length / 10.0)
+        }
+      }
+    )
+  }
+}
+
+object Sine {
+  def sineExplorer(using
+      intGui: ExploreInt[Component],
+      colorGui: ExploreColor[Component],
+      layout: Layout[Component]
+  ) = {
+    import intGui._
+    import colorGui._
+
+    int("Width").within(0 to 2000).startingWith(1000)
+    ===
+    int("Amplitude").within(0 to 2500).startingWith(500)
+    ===
+    int("Period").within(1 to 1000).startingWith(600)
+    ===
+    color("Stroke Color")
+  }
+
+  def runSine(frame: Frame) = {
+    sineExplorer.explore(
+      frame,
+      { case (((width, amplitude), period), color) =>
+        Image.compile {
+          val curve =
+            doodle.image.examples.Sine.sine(width, amplitude / 10.0, period)
+          doodle.image.examples.Sine.styledSine(curve).strokeColor(color)
+        }
+      }
+    )
+  }
+}
+
 object Main {
   def main(args: Array[String]): Unit = {
     val container = dom.document.querySelector("#container")
@@ -179,6 +241,8 @@ object Main {
         option("Sierpinski"),
         option("Smiley"),
         option("Gravity"),
+        option("Tree"),
+        option("Sine"),
         inContext { node =>
           onChange.mapTo(node.ref.value) --> { choice =>
             dom.document.querySelector("#doodle").innerHTML = ""
@@ -188,6 +252,8 @@ object Main {
                 Fractals.runFractal(frame, Fractals.sierpinski)
               case "Smiley"  => Fractals.runFractal(frame, Fractals.smiley)
               case "Gravity" => Gravity.runGravitySim(frame.size(800, 800))
+              case "Tree"    => Tree.runTree(frame)
+              case "Sine"    => Sine.runSine(frame)
             },
           }
         }
