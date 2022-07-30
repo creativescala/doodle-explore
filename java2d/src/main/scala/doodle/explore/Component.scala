@@ -6,13 +6,12 @@ import javax.swing._
 import fs2.Stream
 import fs2.Pure
 
-import doodle.explore.{ExploreInt, ExploreColor, ExploreChoice, Layout}
+import doodle.explore.{ExploreInt, ExploreColor, ExploreChoice, ExploreBoolean, Layout}
 import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
 import java.awt.event.ActionListener
 import java.awt.event.ActionEvent
 import doodle.java2d
-import doodle.explore.ExploreButton
 import doodle.explore.LayoutDirection
 
 /** An explore GUI element for the Java2D backend
@@ -28,7 +27,7 @@ enum Component[A]
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
       extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
-  case ButtonIR(label: String) extends Component[Boolean]
+  case BooleanIR(label: String, isButton: Boolean) extends Component[Boolean]
   case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
       extends Component[A]
   case LayoutIR[A, B](
@@ -94,7 +93,7 @@ enum Component[A]
         Stream(initial).repeat.map(_ => colorPicker.getColor).map(fromAwtColor)
       )
 
-    case ButtonIR(label) =>
+    case BooleanIR(label, true) =>
       val button = JButton(label)
 
       var pressed = false
@@ -112,6 +111,14 @@ enum Component[A]
           pressed = false
           wasPressed
         })
+      )
+
+    case BooleanIR(label, false) =>
+      val checkbox = JCheckBox(label)
+
+      (
+        checkbox,
+        Stream(checkbox.isSelected).repeat.map(_ => checkbox.isSelected)
       )
 
     case ChoiceIR(name, choices, labels) =>
@@ -198,10 +205,16 @@ implicit object ColorInterpreter extends ExploreColor[Component] {
     }
 }
 
-implicit object ButtonInterpreter extends ExploreButton[Component] {
-  import Component.ButtonIR
+implicit object BooleanInterpreter extends ExploreBoolean[Component] {
+  import Component.BooleanIR
 
-  def button(label: String) = ButtonIR(label)
+  def boolean(label: String) = BooleanIR(label, false)
+  def asButton(generator: Component[Boolean]) = generator match {
+    case generator: BooleanIR => generator.copy(isButton = true)
+  }
+  def asCheckbox(generator: Component[Boolean]) = generator match {
+    case generator: BooleanIR => generator.copy(isButton = false)
+  }
 }
 
 implicit object LayoutInterpreter extends Layout[Component] {

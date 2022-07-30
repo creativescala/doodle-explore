@@ -7,7 +7,7 @@ import fs2.Stream
 import fs2.Pure
 
 import doodle.explore.Explorer
-import doodle.explore.{ExploreInt, ExploreButton, ExploreChoice}
+import doodle.explore.{ExploreInt, ExploreBoolean, ExploreChoice}
 
 import scala.concurrent.duration.DurationInt
 import cats.effect.GenTemporal
@@ -25,12 +25,13 @@ import doodle.explore.Layout
 import doodle.core.Color
 import doodle.explore.ExploreColor
 import doodle.core.UnsignedByte
+import doodle.explore.ExploreBoolean
 
 enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
       extends Component[Int]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
-  case ButtonIR(label: String) extends Component[Boolean]
+  case BooleanIR(label: String, isButton: Boolean) extends Component[Boolean]
   case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
       extends Component[A]
   case LayoutIR[A, B](
@@ -113,7 +114,7 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
         })
         (values, app)
 
-      case ButtonIR(label) =>
+      case BooleanIR(label, true) =>
         val currentValue = Var(false)
         val app = div(button(onClick.mapTo(true) --> currentValue, label))
 
@@ -123,6 +124,16 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
           wasPressed
         })
 
+        (values, app)
+
+      case BooleanIR(labelText, false) =>
+        val currentValue = Var(false)
+        val app = div(
+          label(labelText),
+          input(typ := "checkbox", onChange.mapToChecked --> currentValue)
+        )
+
+        val values = Stream(false).repeat.map(_ => currentValue.now())
         (values, app)
 
       case ChoiceIR(label, choices, choiceLabels) =>
@@ -215,10 +226,16 @@ implicit object ColorInterpreter extends ExploreColor[Component] {
     }
 }
 
-implicit object ButtonInterpreter extends ExploreButton[Component] {
-  import Component.ButtonIR
+implicit object BooleanInterpreter extends ExploreBoolean[Component] {
+  import Component.BooleanIR
 
-  override def button(label: String) = ButtonIR(label)
+  override def boolean(label: String) = BooleanIR(label, false)
+  override def asButton(generator: Component[Boolean]) = generator match {
+    case generator: BooleanIR => generator.copy(isButton = true)
+  }
+  override def asCheckbox(generator: Component[Boolean]) = generator match {
+    case generator: BooleanIR => generator.copy(isButton = false)
+  }
 }
 
 implicit object ChoiceInterpreter extends ExploreChoice[Component] {

@@ -46,7 +46,7 @@ import doodle.explore.ColorComponentOps._
 
 import fs2.{Stream, Pure}
 
-object Main extends IOApp.Simple {
+object Main {
   def simulate(angle: Angle, speed: Double, t: Double) = {
     val translation = Point(
       scala.math.cos(angle.toRadians) * speed * t,
@@ -75,12 +75,12 @@ object Main extends IOApp.Simple {
   def explorer(using
       intGui: ExploreInt[Component],
       choiceGui: ExploreChoice[Component],
-      buttonGui: ExploreButton[Component],
+      booleanGui: ExploreBoolean[Component],
       layout: Layout[Component]
   ) = {
     import intGui._
     import choiceGui._
-    import buttonGui._
+    import booleanGui._
 
     int("G").within(0 to 10).startingWith(1)
     ===
@@ -100,7 +100,7 @@ object Main extends IOApp.Simple {
     button("Reset")
   }
 
-  def run: IO[Unit] = {
+  def main(args: Array[String]) = {
     val frame = Frame(
       FixedSize(1200.0, 1200.0),
       "Explore",

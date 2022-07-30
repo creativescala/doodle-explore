@@ -7,7 +7,7 @@ import doodle.image.syntax.core._
 import doodle.explore.{
   ExploreInt,
   ExploreChoice,
-  ExploreButton,
+  ExploreBoolean,
   ExploreColor,
   Layout
 }
@@ -117,12 +117,12 @@ object Gravity {
   def gravityExplorer(using
       intGui: ExploreInt[Component],
       choiceGui: ExploreChoice[Component],
-      buttonGui: ExploreButton[Component],
+      booleanGui: ExploreBoolean[Component],
       layout: Layout[Component]
   ) = {
     import intGui._
     import choiceGui._
-    import buttonGui._
+    import booleanGui._
 
     int("G").within(0 to 10).startingWith(1)
     ===
@@ -139,7 +139,7 @@ object Gravity {
       )
     )
     ===
-    button("Reset")
+    checkbox("Reset")
   }
 
   def runGravitySim(frame: Frame) = {
