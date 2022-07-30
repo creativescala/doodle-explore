@@ -12,6 +12,8 @@ import doodle.explore.{
   Layout
 }
 import doodle.explore.syntax.all._
+import doodle.explore.Choice
+import doodle.explore.ChoiceConversions._
 
 import doodle.svg.effect.Frame
 import doodle.svg.svgAnimationRenderer
@@ -138,7 +140,7 @@ object Gravity {
       )
     )
     ===
-    checkbox("Reset")
+    button("Reset")
   }
 
   def runGravitySim(frame: Frame) = {
@@ -150,7 +152,7 @@ object Gravity {
     )
     val update: (
         GravityState,
-        ((((Int, Int), Int), Color), Boolean)
+        ((((Int, Int), Int), Choice[Color]), Boolean)
     ) => GravityState = {
       case (state, ((((g, dt), startVel), newSunColor), reset)) =>
         if (reset) {

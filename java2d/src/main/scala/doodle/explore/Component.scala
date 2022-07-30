@@ -7,6 +7,7 @@ import fs2.Stream
 import fs2.Pure
 
 import doodle.explore.{ExploreInt, ExploreColor, ExploreChoice, ExploreBoolean, Layout}
+import doodle.explore.ChoiceConversions._
 import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
 import java.awt.event.ActionListener

@@ -31,6 +31,9 @@ import doodle.interact.syntax._
 import doodle.explore.java2d._
 import doodle.explore._
 import doodle.explore.syntax.all._
+import doodle.explore.ChoiceConversions._
+
+import fs2.{Stream, Pure}
 
 object Main extends App {
   def explorer(using
