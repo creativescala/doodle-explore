@@ -26,6 +26,7 @@ import doodle.core.Color
 import doodle.explore.ExploreColor
 import doodle.core.UnsignedByte
 import doodle.explore.ExploreBoolean
+import doodle.explore.ChoiceConversions._
 
 enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)

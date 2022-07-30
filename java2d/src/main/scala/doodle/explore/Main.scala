@@ -43,6 +43,7 @@ import doodle.explore._
 import doodle.explore.LayoutOps._
 import doodle.explore.IntComponentOps._
 import doodle.explore.ColorComponentOps._
+import doodle.explore.ChoiceConversions._
 
 import fs2.{Stream, Pure}
 
@@ -117,7 +118,7 @@ object Main {
     )
     val update: (
         GravityState,
-        ((((Int, Int), Int), Color), Boolean)
+        ((((Int, Int), Int), Choice[Color]), Boolean)
     ) => GravityState = {
       case (state, ((((g, dt), startVel), newSunColor), reset)) =>
         if (reset) {
