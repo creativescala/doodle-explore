@@ -9,7 +9,7 @@ trait Layout[F[_]] {
   def beside[A, B](left: F[A], right: F[B]): F[(A, B)]
 }
 
-object LayoutOps {
+trait LayoutOps {
   extension [F[_], A](component: F[A])(using layout: Layout[F]) {
     def above[B](other: F[B]) = layout.above(component, other)
     def beside[B](other: F[B]) = layout.beside(component, other)

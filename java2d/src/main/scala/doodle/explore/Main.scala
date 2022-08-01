@@ -40,9 +40,7 @@ import doodle.interact.syntax._
 
 import doodle.explore.java2d._
 import doodle.explore._
-import doodle.explore.LayoutOps._
-import doodle.explore.IntComponentOps._
-import doodle.explore.ColorComponentOps._
+import doodle.explore.syntax.all._
 
 import fs2.{Stream, Pure}
 

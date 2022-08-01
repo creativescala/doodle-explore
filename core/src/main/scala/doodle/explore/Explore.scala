@@ -21,6 +21,7 @@ import fs2.Pure
 import cats.effect.IO
 import doodle.interact.effect.AnimationRenderer
 import doodle.effect.Renderer
+import cats.kernel.Eq
 
 /** An `Explorer[A]` is the base type that describes how to render an explore
   * GUI for a given backend. The reference example is
@@ -31,6 +32,13 @@ trait Explorer[A, F[_], Alg[x[_]] <: Algebra[x], Canvas, Frame] {
   /** [[run]] instantiates the GUI and returns a stream of its values.
     */
   def run: Stream[Pure, A]
+
+  def exploreChanges(using
+      a: AnimationRenderer[Canvas],
+      r: Renderer[Alg, F, Frame, Canvas],
+      e: Eq[A],
+  ) =
+    exploreTransformed(s => s.changes)
 
   /** Given a `Frame` and a render function, `explore` runs the explorer GUI,
     * initializes the frame, and produces an animation using the render function

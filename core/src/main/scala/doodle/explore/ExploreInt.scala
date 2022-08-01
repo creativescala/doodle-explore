@@ -12,7 +12,7 @@ trait ExploreInt[F[_]] {
 /** Extension methods for [[ExploreInt]] GUI elements, so that they can be used
   * with dot or infix notation.
   */
-object IntComponentOps {
+trait IntComponentOps {
   extension [F[_]](component: F[Int])(using exploreInt: ExploreInt[F]) {
     def within(start: Int, end: Int) =
       exploreInt.within(component, start, end)

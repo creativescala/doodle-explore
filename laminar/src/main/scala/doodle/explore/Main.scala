@@ -11,8 +11,7 @@ import doodle.explore.{
   ExploreColor,
   Layout
 }
-import doodle.explore.IntComponentOps._
-import doodle.explore.LayoutOps._
+import doodle.explore.syntax.all._
 
 import doodle.svg.effect.Frame
 import doodle.svg.svgAnimationRenderer

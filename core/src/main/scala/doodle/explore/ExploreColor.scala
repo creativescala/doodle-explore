@@ -17,7 +17,7 @@ trait ExploreColor[F[_]] {
 /** Extension methods for [[ExploreColor]] GUI elements, so that they can be
   * used with dot or infix notation.
   */
-object ColorComponentOps {
+trait ColorComponentOps {
   extension [F[_]](component: F[Color])(using exploreColor: ExploreColor[F]) {
     def withDefault(initValue: Color) =
       exploreColor.withDefault(component, initValue)

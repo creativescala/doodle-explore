@@ -54,7 +54,6 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
             defaultValue(initial.toString),
             onInput.mapToValue --> currentValue
           ),
-          span(child.text <-- currentValue)
         )
 
         val values = Stream(initial).repeat.map(_ => currentValue.now().toInt)
