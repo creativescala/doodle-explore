@@ -21,6 +21,7 @@ import fs2.Pure
 import cats.effect.IO
 import doodle.interact.effect.AnimationRenderer
 import doodle.effect.Renderer
+
 import cats.kernel.Eq
 
 /** An `Explorer[A]` is the base type that describes how to render an explore

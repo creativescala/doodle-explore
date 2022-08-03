@@ -51,7 +51,7 @@ To compose multiple components and choose how they are layed out, we use
 
 ```scala
 int("Base Size").within(1 to 30) 
-    .beside(int("Iterations").within(1 to 10).startingWith(2))
+    .beside(int("Iterations").within(1 to 6).startingWith(2))
 ```
 
 Finally, we'll use `ExploreColor` to add a color picker. Our final function
@@ -63,7 +63,7 @@ def explorer(using
     layoutGui: Layout[Component],
 ) = {
     int("Base Size").within(1 to 30) 
-        .beside(int("Iterations").within(1 to 10).startingWith(2))
+        .beside(int("Iterations").within(1 to 6).startingWith(2))
         .above(color("Stroke Color"))
 }
 ```
@@ -71,4 +71,31 @@ def explorer(using
 ## Render
 
 The `render` function describes how to create a `Picture` from the values
-produced by your `explorer`.
+produced by your `explorer`. Because the output of the explorer will be
+a nested tuple, it is best to use an anonymous function to destructure
+the values and then pass them to another function that handles the rest.
+For this to work, we have to pass the function directly to our `explorer.explore`
+call so that type inference takes effect.
+
+For this example, we will use the sierpinski function from `doodle.image.examples`.
+We'll also use the following frame: 
+
+```scala
+val frame = Frame(
+    FixedSize(1200.0, 1200.0),
+    "Explore",
+    AtOrigin,
+    Some(Color.white),
+    ClearToBackground,
+)
+```
+
+Using this, we can finally run our explorer with:
+
+```scala
+explorer.explore(frame, { case ((size, iterations), color) =>
+    Image.compile {
+        doodle.image.examples.sierpinski(iterations, size).strokeColor(color)
+    }
+})
+```
