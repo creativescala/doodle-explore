@@ -4,10 +4,10 @@ import scala.language.implicitConversions
 
 case class Choice[A](value: A)
 
-object ChoiceConversions {
-  implicit def choiceToValue[A](choice: Choice[A]): A = choice.value
-  implicit def valueToChoice[A](value: A): Choice[A] = Choice(value)
-  implicit def valueSeqToChoiceSeq[A](values: Seq[A]): Seq[Choice[A]] = values.map(Choice(_))
+object ChoiceOps {
+  extension [A](values: Seq[A]) {
+    def toChoices: Seq[Choice[A]] = values.map(Choice(_))
+  }
 }
 
 trait ExploreChoice[F[_]] {

@@ -43,7 +43,7 @@ import doodle.explore._
 import doodle.explore.LayoutOps._
 import doodle.explore.IntComponentOps._
 import doodle.explore.ColorComponentOps._
-import doodle.explore.ChoiceConversions._
+import doodle.explore.ChoiceOps._
 
 import fs2.{Stream, Pure}
 
@@ -124,7 +124,7 @@ object Main {
         if (reset) {
           initial.copy(vel = Vec(startVel / 10.0, 90.degrees))
         } else {
-          gravitySim(state, dt / 100.0, g / 10.0).copy(sunColor = newSunColor)
+          gravitySim(state, dt / 100.0, g / 10.0).copy(sunColor = newSunColor.value)
         }
     }
 

@@ -12,7 +12,7 @@ import doodle.explore.{
   Layout
 }
 import doodle.explore.Choice
-import doodle.explore.ChoiceConversions._
+import doodle.explore.ChoiceOps._
 import doodle.explore.IntComponentOps._
 import doodle.explore.LayoutOps._
 
@@ -159,7 +159,7 @@ object Gravity {
         if (reset) {
           initial.copy(vel = Vec(startVel / 10.0, 90.degrees))
         } else {
-          gravitySim(state, dt / 100.0, g / 10.0).copy(sunColor = newSunColor)
+          gravitySim(state, dt / 100.0, g / 10.0).copy(sunColor = newSunColor.value)
         }
     }
 
@@ -226,6 +226,7 @@ object Sine {
         Image.compile {
           val curve =
             doodle.image.examples.Sine.sine(width, amplitude / 10.0, period)
+
           doodle.image.examples.Sine.styledSine(curve).strokeColor(color)
         }
       }

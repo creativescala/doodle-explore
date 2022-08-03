@@ -7,7 +7,7 @@ import fs2.Stream
 import fs2.Pure
 
 import doodle.explore.{ExploreInt, ExploreColor, ExploreChoice, ExploreBoolean, Layout}
-import doodle.explore.ChoiceConversions._
+import doodle.explore.ChoiceOps._
 import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
 import java.awt.event.ActionListener
@@ -187,10 +187,10 @@ implicit object ChoiceInterpreter extends ExploreChoice[Component] {
   import Component.ChoiceIR
 
   override def choice[A](label: String, choices: Seq[A]) =
-    ChoiceIR(label, choices, choices.map(_.toString))
+    ChoiceIR(label, choices.toChoices, choices.map(_.toString))
 
   override def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
-    ChoiceIR(label, choices.map(_._2), choices.map(_._1))
+    ChoiceIR(label, choices.map(_._2).toChoices, choices.map(_._1))
 }
 
 implicit object ColorInterpreter extends ExploreColor[Component] {
