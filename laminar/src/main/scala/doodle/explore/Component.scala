@@ -26,7 +26,7 @@ import doodle.core.Color
 import doodle.explore.ExploreColor
 import doodle.core.UnsignedByte
 import doodle.explore.ExploreBoolean
-import doodle.explore.ChoiceConversions._
+import doodle.explore.ChoiceOps._
 
 enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
@@ -242,9 +242,9 @@ implicit object ChoiceInterpreter extends ExploreChoice[Component] {
   import Component.ChoiceIR
 
   def choice[A](label: String, choices: Seq[A]) =
-    ChoiceIR(label, choices, choices.map(_.toString))
+    ChoiceIR(label, choices.toChoices, choices.map(_.toString))
   def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
-    ChoiceIR(label, choices.map(_._2), choices.map(_._1))
+    ChoiceIR(label, choices.map(_._2).toChoices, choices.map(_._1))
 }
 
 implicit object LayoutInterpreter extends Layout[Component] {
