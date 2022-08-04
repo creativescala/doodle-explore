@@ -31,6 +31,9 @@ def explorer(using
     colorGui: ExploreColor[Component],
     layoutGui: Layout[Component],
 ) = {
+    import intGui._
+    import colorGui._
+
     ???
 }
 ```
@@ -77,7 +80,7 @@ the values and then pass them to another function that handles the rest.
 For this to work, we have to pass the function directly to our `explorer.explore`
 call so that type inference takes effect.
 
-For this example, we will use the sierpinski function from `doodle.image.examples`.
+For this example, we will use the sierpinski function from `doodle.image.examples.Sierpinski`.
 We'll also use the following frame: 
 
 ```scala
@@ -93,6 +96,39 @@ val frame = Frame(
 Using this, we can finally run our explorer with:
 
 ```scala
+explorer.explore(frame, { case ((size, iterations), color) =>
+    Image.compile {
+        doodle.image.examples.Sierpinski.sierpinski(iterations, size).strokeColor(color)
+    }
+})
+```
+
+___
+
+Our final code is this:
+    
+```scala
+def explorer(using
+    intGui: ExploreInt[Component],
+    colorGui: ExploreColor[Component],
+    layoutGui: Layout[Component],
+) = {
+    import intGui._
+    import colorGui._
+
+    int("Base Size").within(1 to 30) 
+        .beside(int("Iterations").within(1 to 6).startingWith(2))
+        .above(color("Stroke Color"))
+}
+
+val frame = Frame(
+    FixedSize(1200.0, 1200.0),
+    "Explore",
+    AtOrigin,
+    Some(Color.white),
+    ClearToBackground,
+)
+
 explorer.explore(frame, { case ((size, iterations), color) =>
     Image.compile {
         doodle.image.examples.sierpinski(iterations, size).strokeColor(color)
