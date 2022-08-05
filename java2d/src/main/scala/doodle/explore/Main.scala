@@ -16,19 +16,9 @@
 
 package doodle.explore
 
-import cats.effect.{IO, IOApp}
-
-import concurrent.duration.DurationInt
-import cats.effect.IO.asyncForIO
-import cats.effect.IO
-
-import concurrent.duration.DurationInt
-
 import doodle.core._
 import doodle.image._
-import doodle.image.syntax._
 import doodle.image.syntax.all._
-import doodle.image.syntax.core._
 import doodle.java2d._
 
 import doodle.java2d.effect.Center._
@@ -41,8 +31,6 @@ import doodle.interact.syntax._
 import doodle.explore.java2d._
 import doodle.explore._
 import doodle.explore.syntax.all._
-
-import fs2.{Stream, Pure}
 
 object Main extends App {
   def explorer(using

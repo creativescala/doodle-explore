@@ -38,8 +38,13 @@ trait Explorer[A, F[_], Alg[x[_]] <: Algebra[x], Canvas, Frame] {
       a: AnimationRenderer[Canvas],
       r: Renderer[Alg, F, Frame, Canvas],
       e: Eq[A],
-  ) =
+  ) = {
+    implicit object EqColor extends Eq[Color] {
+      def eqv(a: Color, b: Color) = a ~= b
+    }
+
     exploreTransformed(s => s.changes)
+  }
 
   /** Given a `Frame` and a render function, `explore` runs the explorer GUI,
     * initializes the frame, and produces an animation using the render function
