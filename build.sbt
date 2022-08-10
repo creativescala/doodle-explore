@@ -19,20 +19,24 @@ val Scala312 = "3.1.2"
 ThisBuild / crossScalaVersions := Seq(Scala312 /*, "2.13.8"*/ )
 ThisBuild / scalaVersion := Scala312 // the default Scala
 
+// Dependencies used by all the sub-projects
+ThisBuild / libraryDependencies ++= Seq(
+  "org.typelevel" %%% "cats-core" % "2.7.0",
+  "org.typelevel" %%% "cats-effect" % "3.3.12",
+  "co.fs2" %% "fs2-core" % "3.2.8",
+  "org.creativescala" %% "doodle" % "0.11.2",
+  "org.scalameta" %%% "munit" % "0.7.29" % Test,
+  "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
+)
+
 lazy val root = tlCrossRootProject.aggregate(core, java2d, laminar)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
   .settings(
-    name := "doodle-explore-2",
+    name := "doodle-explore",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.7.0",
-      "org.typelevel" %%% "cats-effect" % "3.3.12",
-      "co.fs2" %% "fs2-core" % "3.2.8",
-      "org.creativescala" %% "doodle" % "0.11.1",
-      "org.scalameta" %%% "munit" % "0.7.29" % Test,
-      "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test,
     )
   )
 
@@ -40,15 +44,7 @@ lazy val java2d = crossProject(JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("java2d"))
   .settings(
-    name := "doodle-explore-2",
-    libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.7.0",
-      "org.typelevel" %%% "cats-effect" % "3.3.12",
-      "co.fs2" %% "fs2-core" % "3.2.8",
-      "org.creativescala" %% "doodle" % "0.11.1",
-      "org.scalameta" %%% "munit" % "0.7.29" % Test,
-      "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
-    )
+    name := "doodle-explore"
   )
   .dependsOn(core)
 
@@ -56,18 +52,12 @@ lazy val laminar = crossProject(JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("laminar"))
   .settings(
-    name := "doodle-explore-2",
+    name := "doodle-explore",
     scalaJSUseMainModuleInitializer := true,
     Compile / mainClass := Some("doodle.explore.laminar.Main"),
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.7.0",
-      "org.typelevel" %%% "cats-effect" % "3.3.12",
-      "co.fs2" %%% "fs2-core" % "3.2.8",
-      "org.creativescala" %%% "doodle" % "0.11.1",
-      "org.scalameta" %%% "munit" % "0.7.29" % Test,
-      "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test,
       "com.raquo" %%% "laminar" % "0.14.2",
-      "svg" %%% "doodle-svg" % "0.1.0-SNAPSHOT",
+      "org.creativescala" %%% "doodle-svg" % "0.11.2"
     )
   )
   .dependsOn(core)
