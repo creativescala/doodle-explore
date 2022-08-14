@@ -163,7 +163,7 @@ enum Component[A]
 }
 
 implicit object IntInterpreter extends ExploreInt[Component] {
-  import Component.{IntIR, ChoiceIR}
+  import Component.IntIR
 
   override def int(label: String) =
     IntIR(label, None, 0)
@@ -178,7 +178,7 @@ implicit object IntInterpreter extends ExploreInt[Component] {
   override def startingWith(generator: Component[Int], newInitial: Int) =
     generator match {
       case generator: IntIR         => generator.copy(initial = newInitial)
-      case generator: ChoiceIR[Int] => ???
+      case _ => ???
     }
 }
 
