@@ -157,7 +157,8 @@ object Gravity {
         if (reset) {
           initial.copy(vel = Vec(startVel / 10.0, 90.degrees))
         } else {
-          gravitySim(state, dt / 100.0, g / 10.0).copy(sunColor = newSunColor.value)
+          gravitySim(state, dt / 100.0, g / 10.0)
+            .copy(sunColor = newSunColor.value)
         }
     }
 

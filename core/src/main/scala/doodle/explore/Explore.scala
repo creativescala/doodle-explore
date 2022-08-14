@@ -37,7 +37,7 @@ trait Explorer[A, F[_], Alg[x[_]] <: Algebra[x], Canvas, Frame] {
   def exploreChanges(using
       a: AnimationRenderer[Canvas],
       r: Renderer[Alg, F, Frame, Canvas],
-      e: Eq[A],
+      e: Eq[A]
   ) =
     exploreTransformed(s => s.changes)
 

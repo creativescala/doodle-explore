@@ -6,7 +6,13 @@ import javax.swing._
 import fs2.Stream
 import fs2.Pure
 
-import doodle.explore.{ExploreInt, ExploreColor, ExploreChoice, ExploreBoolean, Layout}
+import doodle.explore.{
+  ExploreInt,
+  ExploreColor,
+  ExploreChoice,
+  ExploreBoolean,
+  Layout
+}
 import doodle.explore.ChoiceOps._
 import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
@@ -178,8 +184,8 @@ implicit object IntInterpreter extends ExploreInt[Component] {
 
   override def startingWith(generator: Component[Int], newInitial: Int) =
     generator match {
-      case generator: IntIR         => generator.copy(initial = newInitial)
-      case _ => ???
+      case generator: IntIR => generator.copy(initial = newInitial)
+      case _                => ???
     }
 }
 

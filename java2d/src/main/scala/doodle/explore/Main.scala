@@ -36,16 +36,17 @@ import fs2.{Stream, Pure}
 
 object Main extends App {
   def explorer(using
-    intGui: ExploreInt[Component],
-    colorGui: ExploreColor[Component],
-    layoutGui: Layout[Component],
-    ) = {
-      import intGui._
-      import colorGui._
+      intGui: ExploreInt[Component],
+      colorGui: ExploreColor[Component],
+      layoutGui: Layout[Component]
+  ) = {
+    import intGui._
+    import colorGui._
 
-      int("Size").within(50 to 750) 
-        .beside(int("Iterations").within(1 to 6).startingWith(2))
-        .above(color("Stroke Color"))
+    int("Size")
+      .within(50 to 750)
+      .beside(int("Iterations").within(1 to 6).startingWith(2))
+      .above(color("Stroke Color"))
   }
 
   val frame = Frame(
@@ -53,12 +54,17 @@ object Main extends App {
     "Explore",
     AtOrigin,
     Some(Color.white),
-    ClearToBackground,
-    )
+    ClearToBackground
+  )
 
-  explorer.explore(frame, { case ((size, iterations), color) =>
-    Image.compile {
-      doodle.image.examples.Sierpinski.sierpinski(iterations, size).strokeColor(color)
+  explorer.explore(
+    frame,
+    { case ((size, iterations), color) =>
+      Image.compile {
+        doodle.image.examples.Sierpinski
+          .sierpinski(iterations, size)
+          .strokeColor(color)
+      }
     }
-  })
+  )
 }

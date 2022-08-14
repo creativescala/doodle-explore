@@ -54,7 +54,7 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
             maxAttr(max.toString),
             defaultValue(initial.toString),
             onInput.mapToValue --> currentValue
-          ),
+          )
         )
 
         val values = Stream(initial).repeat.map(_ => currentValue.now().toInt)
