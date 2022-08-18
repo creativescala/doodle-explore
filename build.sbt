@@ -1,23 +1,22 @@
 // https://typelevel.org/sbt-typelevel/faq.html#what-is-a-base-version-anyway
-ThisBuild / tlBaseVersion := "0.0" // your current series x.y
+ThisBuild / tlBaseVersion := "0.1" // your current series x.y
 
 ThisBuild / organization := "org.creativescala"
 ThisBuild / organizationName := "Creative Scala"
+ThisBuild / startYear := Some(2022)
 ThisBuild / licenses := Seq(License.Apache2)
 ThisBuild / developers := List(
   // your GitHub handle and name
   tlGitHubDev("noelwelsh", "Noel Welsh")
 )
 
-// publish to s01.oss.sonatype.org (set to true to publish to oss.sonatype.org instead)
 ThisBuild / tlSonatypeUseLegacyHost := false
 
-// publish website from this branch
 ThisBuild / tlSitePublishBranch := Some("main")
 
 val Scala312 = "3.1.2"
-ThisBuild / crossScalaVersions := Seq(Scala312 /*, "2.13.8"*/ )
-ThisBuild / scalaVersion := Scala312 // the default Scala
+ThisBuild / crossScalaVersions := Seq(Scala312)
+ThisBuild / scalaVersion := Scala312
 
 // Dependencies used by all the sub-projects
 ThisBuild / libraryDependencies ++= Seq(
@@ -34,18 +33,12 @@ lazy val root = tlCrossRootProject.aggregate(core, java2d, laminar)
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
-  .settings(
-    name := "doodle-explore",
-    libraryDependencies ++= Seq(
-    )
-  )
+  .settings(name := "doodle-explore")
 
 lazy val java2d = crossProject(JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("java2d"))
-  .settings(
-    name := "doodle-explore"
-  )
+  .settings(name := "doodle-explore")
   .dependsOn(core)
 
 lazy val laminar = crossProject(JSPlatform)
