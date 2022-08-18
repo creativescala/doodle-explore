@@ -201,29 +201,32 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
 implicit object IntInterpreter extends ExploreInt[Component] {
   import Component.IntIR
 
-  override def int(label: String) = IntIR(label, None, 0)
+  def int(label: String) = IntIR(label, None, 0)
 
-  override def within(generator: Component[Int], start: Int, end: Int) =
-    generator match {
-      case generator: IntIR => generator.copy(bounds = Some(start, end))
-    }
+  extension (generator: Component[Int])
+    def within(start: Int, end: Int) =
+      generator match {
+        case generator: IntIR => generator.copy(bounds = Some(start, end))
+      }
 
-  override def startingWith(generator: Component[Int], initValue: Int) =
-    generator match {
-      case generator: IntIR => generator.copy(initial = initValue)
-    }
+  extension (generator: Component[Int])
+    def withDefault(initValue: Int) =
+      generator match {
+        case generator: IntIR => generator.copy(initial = initValue)
+      }
 }
 
 implicit object ColorInterpreter extends ExploreColor[Component] {
   import Component.ColorIR
 
-  override def color(name: String) =
+  def color(name: String) =
     ColorIR(name, Color.black.asInstanceOf[Color])
 
-  override def withDefault(generator: Component[Color], initColor: Color) =
-    generator match {
-      case generator: ColorIR => generator.copy(initColor = initColor)
-    }
+  extension (generator: Component[Color])
+    def withDefault(initColor: Color) =
+      generator match {
+        case generator: ColorIR => generator.copy(initColor = initColor)
+      }
 }
 
 implicit object BooleanInterpreter extends ExploreBoolean[Component] {
@@ -250,8 +253,11 @@ implicit object ChoiceInterpreter extends ExploreChoice[Component] {
 implicit object LayoutInterpreter extends Layout[Component] {
   import Component.LayoutIR
 
-  def above[A, B](top: Component[A], bottom: Component[B]) =
-    LayoutIR(LayoutDirection.Vertical, top, bottom)
-  def beside[A, B](left: Component[A], right: Component[B]) =
-    LayoutIR(LayoutDirection.Horizontal, left, right)
+  extension [A, B](top: Component[A])
+    def above(bottom: Component[B]) =
+      LayoutIR(LayoutDirection.Vertical, top, bottom)
+
+  extension [A, B](left: Component[A])
+    def beside(right: Component[B]) =
+      LayoutIR(LayoutDirection.Horizontal, left, right)
 }
