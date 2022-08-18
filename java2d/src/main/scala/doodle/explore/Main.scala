@@ -30,7 +30,6 @@ import doodle.interact.syntax._
 
 import doodle.explore.java2d._
 import doodle.explore._
-import doodle.explore.syntax.all._
 
 import fs2.{Stream, Pure}
 
@@ -45,7 +44,7 @@ object Main extends App {
 
     int("Size")
       .within(50 to 750)
-      .beside(int("Iterations").within(1 to 6).startingWith(2))
+      .beside(int("Iterations").within(1 to 6).withDefault(2))
       .above(color("Stroke Color"))
   }
 

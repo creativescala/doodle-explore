@@ -93,11 +93,11 @@ class TestSuite extends CatsEffectSuite {
       import colorGui._
       // import layout._
 
-      (int("Base Size") within (1 to 60) startingWith 10)
+      (int("Base Size") within (1 to 60) withDefault 10)
       ===
-      (int("Iterations") within (1 to 5) startingWith 1)
+      (int("Iterations") within (1 to 5) withDefault 1)
       ===
-      ((int("Stroke Width") within (1 to 20) startingWith 2))
+      ((int("Stroke Width") within (1 to 20) withDefault 2))
       ===
       ((int("X Offset") within (-1000 to 1000)) | (int(
         "Y Offset"
@@ -106,9 +106,9 @@ class TestSuite extends CatsEffectSuite {
       (color("Background") withDefault Color.white)
       ===
       (color("Foreground") withDefault Color.black)
-      // (int("Base Size") within (1 to 60) startingWith 10)
-      //   .above(int("Iterations") within (1 to 5) startingWith 1)
-      //   .above(int("Stroke Width") within (1 to 20) startingWith 2)
+      // (int("Base Size") within (1 to 60) withDefault 10)
+      //   .above(int("Iterations") within (1 to 5) withDefault 1)
+      //   .above(int("Stroke Width") within (1 to 20) withDefault 2)
       //   .above(color("Background") withDefault Color.white)
       //   .above(color("Foreground") withDefault Color.black)
       //   .above(

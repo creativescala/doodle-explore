@@ -75,7 +75,7 @@ implicit object IntInterpreter extends ExploreInt[Component] {
         generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
     }
 
-  override def startingWith(generator: Component[Int], newInitial: Int) =
+  override def withDefault(generator: Component[Int], newInitial: Int) =
     generator match {
       case generator: IntIR => 
         generator.copy(initial = newInitial)
@@ -237,7 +237,7 @@ implicit object IntInterpreter extends ExploreInt[Component] {
         generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
     }
 
-  override def startingWith(generator: Component[Int], newInitial: Int) =
+  override def withDefault(generator: Component[Int], newInitial: Int) =
     generator match {
       case generator: IntIR => 
         generator.copy(initial = newInitial)

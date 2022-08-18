@@ -24,7 +24,6 @@ for our components, and then a `Layout` interpreter to put them together. We'll 
 ```scala
 import doodle.explore.java2d.Component
 import doodle.explore.{ExploreInt, ExploreColor, Layout}
-import doodle.explore.syntax.all._
 
 def explorer(using
     intGui: ExploreInt[Component],
@@ -54,7 +53,7 @@ To compose multiple components and choose how they are layed out, we use
 
 ```scala
 int("Base Size").within(1 to 30) 
-    .beside(int("Iterations").within(1 to 6).startingWith(2))
+    .beside(int("Iterations").within(1 to 6).withDefault(2))
 ```
 
 Finally, we'll use `ExploreColor` to add a color picker. Our final function
@@ -66,7 +65,7 @@ def explorer(using
     layoutGui: Layout[Component],
 ) = {
     int("Base Size").within(1 to 30) 
-        .beside(int("Iterations").within(1 to 6).startingWith(2))
+        .beside(int("Iterations").within(1 to 6).withDefault(2))
         .above(color("Stroke Color"))
 }
 ```
@@ -117,7 +116,7 @@ def explorer(using
     import colorGui._
 
     int("Base Size").within(1 to 30) 
-        .beside(int("Iterations").within(1 to 6).startingWith(2))
+        .beside(int("Iterations").within(1 to 6).withDefault(2))
         .above(color("Stroke Color"))
 }
 
