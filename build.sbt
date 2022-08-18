@@ -65,4 +65,13 @@ lazy val laminar = crossProject(JSPlatform)
 /* } */
 
 /* addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) */
-lazy val docs = project.in(file("site")).enablePlugins(TypelevelSitePlugin)
+lazy val docs = project
+  .in(file("site"))
+  .settings(
+    tlSiteRelatedProjects := Seq(
+      ("Doodle", url("https://creativescala.org/doodle")),
+      ("Doodle SVG", url("https://creativescala.github.io/doodle-svg")),
+      ("Creative Scala", url("https://creativescala.org"))
+    )
+  )
+  .enablePlugins(TypelevelSitePlugin)
