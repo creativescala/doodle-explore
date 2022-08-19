@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Creative Scala
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package doodle.explore
 
 /** Describes a DSL for setting the layout of a given [[Explorer]] component.
@@ -5,16 +21,6 @@ package doodle.explore
   * [[LayoutOps]].
   */
 trait Layout[F[_]] {
-  def above[A, B](top: F[A], bottom: F[B]): F[(A, B)]
-  def beside[A, B](left: F[A], right: F[B]): F[(A, B)]
-}
-
-trait LayoutOps {
-  extension [F[_], A](component: F[A])(using layout: Layout[F]) {
-    def above[B](other: F[B]) = layout.above(component, other)
-    def beside[B](other: F[B]) = layout.beside(component, other)
-
-    def ===[B](other: F[B]) = component.above(other)
-    def |[B](other: F[B]) = component.beside(other)
-  }
+  extension [A, B](top: F[A]) def above(bottom: F[B]): F[(A, B)]
+  extension [A, B](left: F[A]) def beside(right: F[B]): F[(A, B)]
 }

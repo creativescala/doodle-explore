@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Creative Scala
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package doodle.explore.laminar
 
 import doodle.core._
@@ -5,14 +21,13 @@ import doodle.image._
 import doodle.image.syntax.core._
 
 import doodle.explore.{
+  Choice,
   ExploreInt,
   ExploreChoice,
   ExploreBoolean,
   ExploreColor,
   Layout
 }
-import doodle.explore.syntax.all._
-import doodle.explore.Choice
 
 import doodle.svg.effect.Frame
 import doodle.svg.svgAnimationRenderer
@@ -93,11 +108,15 @@ object Fractals {
     import intGui._
     import colorGui._
 
-    int("Size").within(1 to 30).startingWith(10)
-    ===
-    int("Iterations").within(1 to 7).startingWith(1)
-    ===
-    color("Stroke Color")
+    int("Size")
+      .within(1 to 30)
+      .withDefault(10)
+      .above(
+        int("Iterations").within(1 to 7).withDefault(1)
+      )
+      .above(
+        color("Stroke Color")
+      )
   }
 }
 
@@ -124,22 +143,26 @@ object Gravity {
     import choiceGui._
     import booleanGui._
 
-    int("G").within(0 to 10).startingWith(1)
-    ===
-    int("DT").within(1 to 100).startingWith(16)
-    ===
-    int("Start Velocity").within(0 to 100).startingWith(30)
-    ===
-    labeledChoice(
-      "Sun Color",
-      Seq(
-        ("Yellow" -> Color.yellow),
-        ("Red" -> Color.red),
-        ("Blue" -> Color.blue)
+    int("G")
+      .within(0 to 10)
+      .withDefault(1)
+      .above(
+        int("DT").within(1 to 100).withDefault(16)
       )
-    )
-    ===
-    button("Reset")
+      .above(
+        int("Start Velocity").within(0 to 100).withDefault(30)
+      )
+      .above(
+        labeledChoice(
+          "Sun Color",
+          Seq(
+            ("Yellow" -> Color.yellow),
+            ("Red" -> Color.red),
+            ("Blue" -> Color.blue)
+          )
+        )
+      )
+      .above(button("Reset"))
   }
 
   def runGravitySim(frame: Frame) = {
@@ -183,9 +206,12 @@ object Tree {
   ) = {
     import intGui._
 
-    int("Depth").within(1 to 12).startingWith(3)
-    ===
-    int("Length").within(1 to 2500).startingWith(500)
+    int("Depth")
+      .within(1 to 12)
+      .withDefault(3)
+      .above(
+        int("Length").within(1 to 2500).withDefault(500)
+      )
   }
 
   def runTree(frame: Frame) = {
@@ -209,13 +235,18 @@ object Sine {
     import intGui._
     import colorGui._
 
-    int("Width").within(0 to 2000).startingWith(1000)
-    ===
-    int("Amplitude").within(0 to 2500).startingWith(500)
-    ===
-    int("Period").within(1 to 1000).startingWith(600)
-    ===
-    color("Stroke Color")
+    val width =
+      int("Width").within(0 to 2000).withDefault(1000)
+
+    val amplitude =
+      int("Amplitude").within(0 to 2500).withDefault(500)
+
+    val period =
+      int("Period").within(1 to 1000).withDefault(600)
+
+    val strokeColor = color("Stroke Color")
+
+    width.above(amplitude).above(period).above(strokeColor)
   }
 
   def runSine(frame: Frame) = {
