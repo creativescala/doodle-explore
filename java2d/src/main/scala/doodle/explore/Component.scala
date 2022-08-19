@@ -29,7 +29,7 @@ import doodle.explore.{
   ExploreBoolean,
   Layout
 }
-import doodle.explore.ChoiceOps._
+import doodle.explore.Choice
 import doodle.core.{Color, UnsignedByte, Normalized}
 import java.awt.{Color => AwtColor}
 import java.awt.event.ActionListener
@@ -52,7 +52,7 @@ enum Component[A]
   case ColorIR(label: String, initColor: Color) extends Component[Color]
   case BooleanIR(label: String, isButton: Boolean) extends Component[Boolean]
   case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
-      extends Component[A]
+      extends Component[Choice[A]]
   case LayoutIR[A, B](
       direction: LayoutDirection,
       a: Component[A],
@@ -155,7 +155,7 @@ enum Component[A]
       panel.add(label)
       panel.add(comboBox)
 
-      val labelToChoice = labels.zip(choices).toMap
+      val labelToChoice = labels.zip(choices.map(Choice(_))).toMap
 
       (
         panel,
@@ -196,14 +196,12 @@ implicit object IntInterpreter extends ExploreInt[Component] {
       generator match {
         case generator: IntIR =>
           generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
-        case _ => ???
       }
 
   extension (generator: Component[Int])
     def withDefault(initValue: Int): Component[Int] =
       generator match {
         case generator: IntIR => generator.copy(initial = initValue)
-        case _                => ???
       }
 }
 
@@ -211,10 +209,10 @@ implicit object ChoiceInterpreter extends ExploreChoice[Component] {
   import Component.ChoiceIR
 
   override def choice[A](label: String, choices: Seq[A]) =
-    ChoiceIR(label, choices.toChoices, choices.map(_.toString))
+    ChoiceIR(label, choices, choices.map(_.toString))
 
   override def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
-    ChoiceIR(label, choices.map(_._2).toChoices, choices.map(_._1))
+    ChoiceIR(label, choices.map(_._2), choices.map(_._1))
 }
 
 implicit object ColorInterpreter extends ExploreColor[Component] {
@@ -226,21 +224,15 @@ implicit object ColorInterpreter extends ExploreColor[Component] {
   extension (generator: Component[Color])
     def withDefault(initColor: Color): Component[Color] =
       generator match {
-        case generator: ColorIR         => generator.copy(initColor = initColor)
-        case generator: ChoiceIR[Color] => ???
+        case generator: ColorIR => generator.copy(initColor = initColor)
       }
 }
 
 implicit object BooleanInterpreter extends ExploreBoolean[Component] {
   import Component.BooleanIR
 
-  def boolean(label: String) = BooleanIR(label, false)
-  def asButton(generator: Component[Boolean]) = generator match {
-    case generator: BooleanIR => generator.copy(isButton = true)
-  }
-  def asCheckbox(generator: Component[Boolean]) = generator match {
-    case generator: BooleanIR => generator.copy(isButton = false)
-  }
+  def button(label: String) = BooleanIR(label, true)
+  def checkbox(label: String) = BooleanIR(label, false)
 }
 
 implicit object LayoutInterpreter extends Layout[Component] {

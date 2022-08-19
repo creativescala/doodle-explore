@@ -42,7 +42,7 @@ import doodle.core.Color
 import doodle.explore.ExploreColor
 import doodle.core.UnsignedByte
 import doodle.explore.ExploreBoolean
-import doodle.explore.ChoiceOps._
+import doodle.explore.Choice
 
 enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
@@ -50,7 +50,7 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
   case ColorIR(label: String, initColor: Color) extends Component[Color]
   case BooleanIR(label: String, isButton: Boolean) extends Component[Boolean]
   case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
-      extends Component[A]
+      extends Component[Choice[A]]
   case LayoutIR[A, B](
       direction: LayoutDirection,
       a: Component[A],
@@ -178,7 +178,7 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
           labelToChoice(label)
         }
 
-        (values, app)
+        (values.map(Choice(_)), app)
 
       case LayoutIR(direction, a, b) =>
         val (aValues, aUI) = a.runAndMakeUI
@@ -248,22 +248,17 @@ implicit object ColorInterpreter extends ExploreColor[Component] {
 implicit object BooleanInterpreter extends ExploreBoolean[Component] {
   import Component.BooleanIR
 
-  override def boolean(label: String) = BooleanIR(label, false)
-  override def asButton(generator: Component[Boolean]) = generator match {
-    case generator: BooleanIR => generator.copy(isButton = true)
-  }
-  override def asCheckbox(generator: Component[Boolean]) = generator match {
-    case generator: BooleanIR => generator.copy(isButton = false)
-  }
+  def button(label: String) = BooleanIR(label, true)
+  def checkbox(label: String) = BooleanIR(label, false)
 }
 
 implicit object ChoiceInterpreter extends ExploreChoice[Component] {
   import Component.ChoiceIR
 
   def choice[A](label: String, choices: Seq[A]) =
-    ChoiceIR(label, choices.toChoices, choices.map(_.toString))
+    ChoiceIR(label, choices, choices.map(_.toString))
   def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
-    ChoiceIR(label, choices.map(_._2).toChoices, choices.map(_._1))
+    ChoiceIR(label, choices.map(_._2), choices.map(_._1))
 }
 
 implicit object LayoutInterpreter extends Layout[Component] {
