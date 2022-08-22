@@ -13,3 +13,6 @@ libraryDependencies ++= Seq(
   "org.creativescala" %% "doodle-explore" % "@VERSION@"
 )
 ```
+
+@:divWithId(explorer)
+@:doodle(svg, Example.go)

@@ -1,3 +1,5 @@
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 // https://typelevel.org/sbt-typelevel/faq.html#what-is-a-base-version-anyway
 ThisBuild / tlBaseVersion := "0.1" // your current series x.y
 
@@ -50,7 +52,7 @@ lazy val laminar = crossProject(JSPlatform)
     Compile / mainClass := Some("doodle.explore.laminar.Main"),
     libraryDependencies ++= Seq(
       "com.raquo" %%% "laminar" % "0.14.2",
-      "org.creativescala" %%% "doodle-svg" % "0.11.2"
+      "org.creativescala" %%% "doodle-svg" % "0.11.3"
     )
   )
   .dependsOn(core)
@@ -64,7 +66,18 @@ lazy val laminar = crossProject(JSPlatform)
 /*     "test" */
 /* } */
 
-/* addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full) */
+/** Example that is used in documentation */
+lazy val example = crossProject(JSPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("example"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.raquo" %%% "laminar" % "0.14.2",
+      "org.creativescala" %%% "doodle-svg" % "0.11.3"
+    )
+  )
+  .dependsOn(laminar)
+
 lazy val docs = project
   .in(file("site"))
   .settings(
@@ -72,6 +85,17 @@ lazy val docs = project
       ("Doodle", url("https://creativescala.org/doodle")),
       ("Doodle SVG", url("https://creativescala.github.io/doodle-svg")),
       ("Creative Scala", url("https://creativescala.org"))
-    )
+    ),
+    laikaExtensions += DoodleDirectives,
+    Laika / sourceDirectories +=
+      (example.js / Compile / fastOptJS / artifactPath).value
+        .getParentFile() / s"${(example.js / moduleName).value}-fastopt",
+    tlSite := Def
+      .sequential(
+        (example.js / Compile / fastOptJS),
+        mdoc.toTask(""),
+        laikaSite
+      )
+      .value
   )
   .enablePlugins(TypelevelSitePlugin)
