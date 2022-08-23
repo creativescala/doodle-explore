@@ -1,6 +1,6 @@
-# Making and Explorer for your Art Piece
+# Making an Explorer for your Art Piece
 
-Using Explore, creating a GUI for your doodle art means writing
+Using Explore, creating a GUI for your Doodle art means writing
 two functions: `explorer`, and `render`. `explorer` describes the
 GUI of the doodle, and `render` generates a `Picture` from the GUI's
 output values.
