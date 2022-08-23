@@ -1,3 +1,12 @@
+import laika.ast.LengthUnit._
+import laika.ast._
+import laika.helium.Helium
+import laika.helium.config.Favicon
+import laika.helium.config.HeliumIcon
+import laika.helium.config.IconLink
+import laika.helium.config.ImageLink
+import TypelevelGitHubPlugin._
+
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 // https://typelevel.org/sbt-typelevel/faq.html#what-is-a-base-version-anyway
@@ -87,6 +96,58 @@ lazy val docs = project
       ("Creative Scala", url("https://creativescala.org"))
     ),
     laikaExtensions += DoodleDirectives,
+    tlSiteHeliumConfig := {
+      Helium.defaults.site
+        .metadata(
+          title = Some("Doodle Explore"),
+          authors = developers.value.map(_.name),
+          language = Some("en"),
+          version = Some(version.value.toString)
+        )
+        .site
+        .layout(
+          contentWidth = px(860),
+          navigationWidth = px(275),
+          topBarHeight = px(50),
+          defaultBlockSpacing = px(10),
+          defaultLineHeight = 1.5,
+          anchorPlacement = laika.helium.config.AnchorPlacement.Right
+        )
+        .site
+        .darkMode
+        .disabled
+        .site
+        .favIcons(
+          Favicon.external(
+            "https://typelevel.org/img/favicon.png",
+            "32x32",
+            "image/png"
+          )
+        )
+        .site
+        .topNavigationBar(
+          homeLink = IconLink.external(
+            "https://creativescala.org",
+            HeliumIcon.home
+          ),
+          navLinks = tlSiteApiUrl.value.toList.map { url =>
+            IconLink.external(
+              url.toString,
+              HeliumIcon.api,
+              options = Styles("svg-link")
+            )
+          } ++ List(
+            IconLink.external(
+              scmInfo.value
+                .fold("https://github.com/creativescala")(_.browseUrl.toString),
+              HeliumIcon.github,
+              options = Styles("svg-link")
+            )
+            // IconLink.external("https://discord.gg/XF3CXcMzqD", HeliumIcon.chat),
+            // IconLink.external("https://twitter.com/typelevel", HeliumIcon.twitter)
+          )
+        )
+    },
     Laika / sourceDirectories +=
       (example.js / Compile / fastOptJS / artifactPath).value
         .getParentFile() / s"${(example.js / moduleName).value}-fastopt",
