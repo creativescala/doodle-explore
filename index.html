@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="Laika 0.18.1 + Helium Theme" />
-    <title>doodle-explore-2</title>
+    <title>Doodle Explore</title>
     
       <meta name="author" content="Noel Welsh"/>
     
@@ -23,6 +23,9 @@
     <link rel="stylesheet" type="text/css" href="helium/icofont.min.css" />
     <link rel="stylesheet" type="text/css" href="helium/laika-helium.css" />
     <link rel="stylesheet" type="text/css" href="site/styles.css" />
+    <script src="helium/laika-helium.js"></script>
+    <script src="main.js"></script>
+    <script src="main.js"></script>
     <script src="helium/laika-helium.js"></script>
     
     
@@ -61,16 +64,20 @@
       </div>
 
       <ul class="nav-list">
+        <li class="level1 active"><a href="#">Doodle Explore</a></li>
+        <li class="level1"><a href="using-explore.html">Making an Explorer for your Art Piece</a></li>
         <li class="level1"><a href="explorer-types.html">Explorer Types</a></li>
-        <li class="level1 active"><a href="#">doodle-explore-2</a></li>
-        <li class="level1"><a href="using-explore.html">Making and Explorer for your Art Piece</a></li>
         <li class="level1"><a href="writing-a-backend.html">Writing an Explore Backend</a></li>
       </ul>
 
       <ul class="nav-list">
         <li class="level1 nav-header">Related Projects</li>
         
-          <li class="level2"><a href="https://typelevel.org/cats/">cats</a></li>
+          <li class="level2"><a href="https://creativescala.org/doodle">Doodle</a></li>
+        
+          <li class="level2"><a href="https://creativescala.github.io/doodle-svg">Doodle SVG</a></li>
+        
+          <li class="level2"><a href="https://creativescala.org">Creative Scala</a></li>
         
       </ul>
 
@@ -79,10 +86,10 @@
     <div id="container">
 
       <nav id="page-nav">
-        <p class="header"><a href="#">doodle-explore-2</a></p>
+        <p class="header"><a href="#">Doodle Explore</a></p>
 
         <ul class="nav-list">
-          <li class="level1"><a href="#usage">Usage</a></li>
+          <li class="level1"><a href="#using">Using</a></li>
         </ul>
 
         <p class="footer"></p>
@@ -90,14 +97,18 @@
 
       <main class="content">
 
-        <h1 id="doodle-explore-2" class="title">doodle-explore-2</h1>
+        <h1 id="doodle-explore" class="title">Doodle Explore</h1>
+        <p>Doodle Explore is a library to quickly create user interfaces that control <a href="https://github.com/creativescala/doodle">Doodle</a> images. For example, you can use Doodle Explore to explore how changing parameters affects a visualization of a complex system or find the most aesthetically pleasing settings for a generative art picture.</p>
         
-        <h3 id="usage" class="section">Usage<a class="anchor-link right" href="#usage"><i class="icofont-laika">&#xef71;</i></a></h3>
-        <p>This library is currently available for Scala binary versions 2.13 and 3.1.</p>
+        <h2 id="using" class="section">Using<a class="anchor-link right" href="#using"><i class="icofont-laika">&#xef71;</i></a></h2>
+        <p>This library is currently available for Scala version 3.1.</p>
         <p>To use the latest version, include the following in your <code>build.sbt</code>:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
-  </span><span class="string-literal">&quot;org.creativescala&quot;</span><span> %% </span><span class="string-literal">&quot;doodle-explore-2&quot;</span><span> % </span><span class="string-literal">&quot;0.1-6d30429-SNAPSHOT&quot;</span><span>
+  </span><span class="string-literal">&quot;org.creativescala&quot;</span><span> %% </span><span class="string-literal">&quot;doodle-explore&quot;</span><span> % </span><span class="string-literal">&quot;0.1-5ad25fb-SNAPSHOT&quot;</span><span>
 )</span></code></pre>
+        <div id="explorer"></div>
+        <div id="svg"></div>
+        <script>Example.go("svg")</script>
 
         <hr style="margin-top: 30px"/>
         <footer style="font-size: 90%; text-align: center">
