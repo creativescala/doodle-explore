@@ -3,7 +3,6 @@ package example
 import doodle.core.*
 import doodle.syntax.all.*
 import doodle.explore.*
-import doodle.explore.syntax.all.*
 import doodle.explore.laminar.{Component, IntInterpreter}
 import doodle.svg.*
 import scala.scalajs.js.annotation.*
@@ -25,7 +24,7 @@ object Example {
     IntInterpreter
       .int("Count")
       .within(1, 20)
-      .startingWith(initialCount)
+      .withDefault(initialCount)
       .explore(
         frame,
         count => concentricCircles(count)
