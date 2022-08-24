@@ -7408,11 +7408,11 @@ function $h_Ldoodle_syntax_LayoutSyntax$LayoutPictureOps() {
   /*<skip>*/
 }
 $h_Ldoodle_syntax_LayoutSyntax$LayoutPictureOps.prototype = $c_Ldoodle_syntax_LayoutSyntax$LayoutPictureOps.prototype;
-$c_Ldoodle_syntax_LayoutSyntax$LayoutPictureOps.prototype.on__Ldoodle_algebra_Picture__Lcats_kernel_Semigroup__Ldoodle_algebra_Picture = (function(that, s) {
+$c_Ldoodle_syntax_LayoutSyntax$LayoutPictureOps.prototype.under__Ldoodle_algebra_Picture__Lcats_kernel_Semigroup__Ldoodle_algebra_Picture = (function(that, s) {
   var f = new $c_sjsr_AnonFunction1(((algebra) => {
     var algebra$1 = $as_Ldoodle_algebra_Layout(algebra);
-    var top = this.Ldoodle_syntax_LayoutSyntax$LayoutPictureOps__f_picture.apply__Ldoodle_algebra_Algebra__O(algebra$1);
-    var bottom = that.apply__Ldoodle_algebra_Algebra__O(algebra$1);
+    var bottom = this.Ldoodle_syntax_LayoutSyntax$LayoutPictureOps__f_picture.apply__Ldoodle_algebra_Algebra__O(algebra$1);
+    var top = that.apply__Ldoodle_algebra_Algebra__O(algebra$1);
     var top$1 = $as_Lcats_data_IndexedStateT(top);
     var bottom$1 = $as_Lcats_data_IndexedStateT(bottom);
     return $f_Ldoodle_algebra_generic_GenericLayout__on__Lcats_data_IndexedStateT__Lcats_data_IndexedStateT__Lcats_kernel_Semigroup__Lcats_data_IndexedStateT(algebra$1, top$1, bottom$1, s)
@@ -7562,18 +7562,19 @@ $c_Lexample_Example$.prototype.concentricCircles__I__Ldoodle_core_Color__Ldoodle
     var this$5 = $m_Ldoodle_syntax_package$all$();
     var this$6 = new $c_Ldoodle_syntax_AngleSyntax$AngleIntOps(this$5, 10);
     var picture$1 = $$x1.fillColor__Ldoodle_core_Color__Ldoodle_algebra_Picture(color.spin__Ldoodle_core_Angle__Ldoodle_core_Color$HSLA($m_Ldoodle_core_Angle$().degrees__D__Ldoodle_core_Angle(this$6.Ldoodle_syntax_AngleSyntax$AngleIntOps__f_angle).$times__D__Ldoodle_core_Angle(count)));
-    return new $c_Ldoodle_syntax_LayoutSyntax$LayoutPictureOps(this$8, picture$1).on__Ldoodle_algebra_Picture__Lcats_kernel_Semigroup__Ldoodle_algebra_Picture(this.concentricCircles__I__Ldoodle_core_Color__Ldoodle_algebra_Picture((((-1) + count) | 0), color), $m_Lcats_kernel_instances_unit_package$().Lcats_kernel_instances_unit_package$__f_catsKernelStdAlgebraForUnit)
+    return new $c_Ldoodle_syntax_LayoutSyntax$LayoutPictureOps(this$8, picture$1).under__Ldoodle_algebra_Picture__Lcats_kernel_Semigroup__Ldoodle_algebra_Picture(this.concentricCircles__I__Ldoodle_core_Color__Ldoodle_algebra_Picture((((-1) + count) | 0), color), $m_Lcats_kernel_instances_unit_package$().Lcats_kernel_instances_unit_package$__f_catsKernelStdAlgebraForUnit)
   }
 });
 $c_Lexample_Example$.prototype.go__T__V = (function(mountId) {
   var frame = $m_Ldoodle_svg_package$().Ldoodle_svg_package$__f_Frame.apply__T__Ldoodle_svg_effect_Frame(mountId);
-  $m_Ldoodle_core_Color$();
+  var initialColor = $m_Ldoodle_core_Color$().Ldoodle_core_Color$__f_springGreen;
   var $$x2 = $m_Ldoodle_explore_laminar_Component$package$IntInterpreter$();
   var $$x1 = $m_Ldoodle_explore_laminar_Component$package$IntInterpreter$();
   var bounds = $m_s_None$();
   var top = $$x2.withDefault__Ldoodle_explore_laminar_Component__I__Ldoodle_explore_laminar_Component($$x1.within__Ldoodle_explore_laminar_Component__I__I__Ldoodle_explore_laminar_Component(new $c_Ldoodle_explore_laminar_Component$IntIR("Count", bounds, 0), 1, 20), 4);
+  var $$x3 = $m_Ldoodle_explore_laminar_Component$package$ColorInterpreter$();
   var initColor = $m_Ldoodle_core_Color$().Ldoodle_core_Color$__f_black;
-  var bottom = new $c_Ldoodle_explore_laminar_Component$ColorIR("Color", initColor);
+  var bottom = $$x3.withDefault__Ldoodle_explore_laminar_Component__Ldoodle_core_Color__Ldoodle_explore_laminar_Component(new $c_Ldoodle_explore_laminar_Component$ColorIR("Color", initColor), initialColor);
   var direction = $s_Ldoodle_explore_LayoutDirection$__Vertical__Ldoodle_explore_LayoutDirection();
   var this$7 = new $c_Ldoodle_explore_laminar_Component$LayoutIR(direction, top, bottom);
   var a = $m_Ldoodle_svg_package$().Ldoodle_svg_package$__f_svgAnimationRenderer;
@@ -21421,6 +21422,40 @@ function $isArrayOf_Ldoodle_algebra_Style(obj, depth) {
 }
 function $asArrayOf_Ldoodle_algebra_Style(obj, depth) {
   return (($isArrayOf_Ldoodle_algebra_Style(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Ldoodle.algebra.Style;", depth))
+}
+/** @constructor */
+function $c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$() {
+  /*<skip>*/
+}
+$c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$.prototype = new $h_O();
+$c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$.prototype.constructor = $c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$;
+/** @constructor */
+function $h_Ldoodle_explore_laminar_Component$package$ColorInterpreter$() {
+  /*<skip>*/
+}
+$h_Ldoodle_explore_laminar_Component$package$ColorInterpreter$.prototype = $c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$.prototype;
+$c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$.prototype.withDefault__Ldoodle_explore_laminar_Component__Ldoodle_core_Color__Ldoodle_explore_laminar_Component = (function(generator, initColor) {
+  if ((generator instanceof $c_Ldoodle_explore_laminar_Component$ColorIR)) {
+    var generator$2 = $as_Ldoodle_explore_laminar_Component$ColorIR(generator);
+    var label = generator$2.Ldoodle_explore_laminar_Component$ColorIR__f_label;
+    return new $c_Ldoodle_explore_laminar_Component$ColorIR(label, initColor)
+  };
+  throw new $c_s_MatchError(generator)
+});
+var $d_Ldoodle_explore_laminar_Component$package$ColorInterpreter$ = new $TypeData().initClass({
+  Ldoodle_explore_laminar_Component$package$ColorInterpreter$: 0
+}, false, "doodle.explore.laminar.Component$package$ColorInterpreter$", {
+  Ldoodle_explore_laminar_Component$package$ColorInterpreter$: 1,
+  O: 1,
+  Ldoodle_explore_ExploreColor: 1
+});
+$c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$.prototype.$classData = $d_Ldoodle_explore_laminar_Component$package$ColorInterpreter$;
+var $n_Ldoodle_explore_laminar_Component$package$ColorInterpreter$;
+function $m_Ldoodle_explore_laminar_Component$package$ColorInterpreter$() {
+  if ((!$n_Ldoodle_explore_laminar_Component$package$ColorInterpreter$)) {
+    $n_Ldoodle_explore_laminar_Component$package$ColorInterpreter$ = new $c_Ldoodle_explore_laminar_Component$package$ColorInterpreter$()
+  };
+  return $n_Ldoodle_explore_laminar_Component$package$ColorInterpreter$
 }
 /** @constructor */
 function $c_Ldoodle_explore_laminar_Component$package$IntInterpreter$() {
