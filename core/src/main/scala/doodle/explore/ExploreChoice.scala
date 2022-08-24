@@ -24,3 +24,22 @@ trait ExploreChoice[F[_]] {
   def labeledChoice[A](label: String, choices: Map[String, A]): F[Choice[A]] =
     labeledChoice(label, choices.toSeq)
 }
+
+trait ExploreChoiceConstructor {
+  self: BaseConstructor { type Algebra[x[_]] <: ExploreChoice[x] } =>
+
+  def choice[A](label: String, choices: Seq[A]): Component[Choice[A]] =
+    algebra.choice(label, choices)
+
+  def labeledChoice[A](
+      label: String,
+      choices: Seq[(String, A)]
+  ): Component[Choice[A]] =
+    algebra.labeledChoice(label, choices)
+
+  def labeledChoice[A](
+      label: String,
+      choices: Map[String, A]
+  ): Component[Choice[A]] =
+    labeledChoice(label, choices.toSeq)
+}

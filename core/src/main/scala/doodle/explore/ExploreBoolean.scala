@@ -20,3 +20,13 @@ trait ExploreBoolean[F[_]] {
   def button(label: String): F[Boolean]
   def checkbox(label: String): F[Boolean]
 }
+
+trait ExploreBooleanConstructor {
+  self: BaseConstructor { type Algebra[x[_]] <: ExploreBoolean[x] } =>
+
+  def button(label: String): Component[Boolean] =
+    algebra.button(label)
+
+  def checkbox(label: String): Component[Boolean] =
+    algebra.checkbox(label)
+}

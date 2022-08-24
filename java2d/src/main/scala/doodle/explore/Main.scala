@@ -34,18 +34,14 @@ import doodle.explore._
 import fs2.{Stream, Pure}
 
 object Main extends App {
-  def explorer(using
-      intGui: ExploreInt[Component],
-      colorGui: ExploreColor[Component],
-      layoutGui: Layout[Component]
-  ) = {
-    import intGui._
-    import colorGui._
+  import Explore.given
 
-    int("Size")
+  val explorer = {
+    Explore
+      .int("Size")
       .within(50 to 750)
-      .beside(int("Iterations").within(1 to 6).withDefault(2))
-      .above(color("Stroke Color"))
+      .beside(Explore.int("Iterations").within(1 to 6).withDefault(2))
+      .above(Explore.color("Stroke Color"))
   }
 
   val frame = Frame(

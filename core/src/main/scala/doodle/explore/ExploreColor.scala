@@ -26,6 +26,13 @@ import fs2.Pure
   * or infix notation through [[ColorComponentOps]].
   */
 trait ExploreColor[F[_]] {
-  def color(name: String): F[Color]
+  def color(label: String): F[Color]
   extension (generator: F[Color]) def withDefault(initValue: Color): F[Color]
+}
+
+trait ExploreColorConstructor {
+  self: BaseConstructor { type Algebra[x[_]] <: ExploreColor[x] } =>
+
+  def color(label: String): Component[Color] =
+    algebra.color(label)
 }

@@ -29,3 +29,10 @@ trait ExploreInt[F[_]] {
       if (range.isInclusive) generator.within(range.start, range.end)
       else generator.within(range.start, range.end - 1)
 }
+
+trait ExploreIntConstructor {
+  self: BaseConstructor { type Algebra[x[_]] <: ExploreInt[x] } =>
+
+  def int(label: String): Component[Int] =
+    algebra.int(label)
+}
