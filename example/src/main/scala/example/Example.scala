@@ -15,7 +15,7 @@ object Example {
       Picture
         .circle(count * 20)
         .fillColor(color.spin(10.degrees * count))
-        .on(concentricCircles(count - 1, color))
+        .under(concentricCircles(count - 1, color))
 
   // Explore the concentricCircles example
   //
@@ -24,13 +24,13 @@ object Example {
   def go(mountId: String): Unit = {
     val frame = Frame(mountId)
     val initialCount = 4
-    val initialColor = Color.midnightBlue
+    val initialColor = Color.springGreen
 
     IntInterpreter
       .int("Count")
       .within(1, 20)
       .withDefault(initialCount)
-      .above(ColorInterpreter.color("Color"))
+      .above(ColorInterpreter.color("Color").withDefault(initialColor))
       .explore(
         frame,
         (count, color) => concentricCircles(count, color)
