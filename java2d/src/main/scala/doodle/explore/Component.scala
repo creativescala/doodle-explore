@@ -169,7 +169,7 @@ enum Component[A]
       val (bUI, bValues) = b.runAndMakeUI
       val directionInt = direction match {
         case LayoutDirection.Horizontal => BoxLayout.X_AXIS
-        case LayoutDirection.Vertical   => BoxLayout.Y_AXIS,
+        case LayoutDirection.Vertical   => BoxLayout.Y_AXIS
       }
       (dualBoxLayout(directionInt, aUI, bUI), aValues.zip(bValues))
   }

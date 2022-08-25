@@ -26,9 +26,9 @@ ThisBuild / tlSonatypeUseLegacyHost := true
 
 ThisBuild / tlSitePublishBranch := Some("main")
 
-val Scala312 = "3.1.2"
-ThisBuild / crossScalaVersions := Seq(Scala312)
-ThisBuild / scalaVersion := Scala312
+val Scala3 = "3.1.3"
+ThisBuild / crossScalaVersions := Seq(Scala3)
+ThisBuild / scalaVersion := Scala3
 
 // Dependencies used by all the sub-projects
 ThisBuild / libraryDependencies ++= Seq(

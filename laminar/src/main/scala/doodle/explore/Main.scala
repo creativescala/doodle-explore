@@ -20,14 +20,7 @@ import doodle.core._
 import doodle.image._
 import doodle.image.syntax.core._
 
-import doodle.explore.{
-  Choice,
-  ExploreInt,
-  ExploreChoice,
-  ExploreBoolean,
-  ExploreColor,
-  Layout
-}
+import doodle.explore.Choice
 
 import doodle.svg.effect.Frame
 import doodle.svg.svgAnimationRenderer
@@ -39,7 +32,11 @@ import org.scalajs.dom.document
 import com.raquo.laminar.api.L.{*, given}
 import doodle.image.Image
 
+import doodle.explore.*
+
 object Fractals {
+  import Explore.given
+
   def sierpinski(n: Int, size: Int): Image = {
     def builder(component: Image) = {
       component above (
@@ -100,27 +97,23 @@ object Fractals {
     )
   }
 
-  def fractalExplorer(using
-      intGui: ExploreInt[Component],
-      colorGui: ExploreColor[Component],
-      layoutGui: Layout[Component]
-  ) = {
-    import intGui._
-    import colorGui._
-
-    int("Size")
+  val fractalExplorer =
+    Explore
+      .int("Size")
       .within(1 to 30)
       .withDefault(10)
       .above(
-        int("Iterations").within(1 to 7).withDefault(1)
+        Explore.int("Iterations").within(1 to 7).withDefault(1)
       )
       .above(
-        color("Stroke Color")
+        Explore.color("Stroke Color")
       )
-  }
+
 }
 
 object Gravity {
+  import Explore.given
+
   case class GravityState(pos: Vec, vel: Vec, mass: Double, sunColor: Color)
   def gravitySim(state: GravityState, dt: Double, g: Double): GravityState = {
     val sunMass = 100.0
@@ -133,27 +126,19 @@ object Gravity {
     state.copy(pos = state.pos + state.vel * dt, vel = state.vel + accel * dt)
   }
 
-  def gravityExplorer(using
-      intGui: ExploreInt[Component],
-      choiceGui: ExploreChoice[Component],
-      booleanGui: ExploreBoolean[Component],
-      layout: Layout[Component]
-  ) = {
-    import intGui._
-    import choiceGui._
-    import booleanGui._
-
-    int("G")
+  val gravityExplorer =
+    Explore
+      .int("G")
       .within(0 to 10)
       .withDefault(1)
       .above(
-        int("DT").within(1 to 100).withDefault(16)
+        Explore.int("DT").within(1 to 100).withDefault(16)
       )
       .above(
-        int("Start Velocity").within(0 to 100).withDefault(30)
+        Explore.int("Start Velocity").within(0 to 100).withDefault(30)
       )
       .above(
-        labeledChoice(
+        Explore.labeledChoice(
           "Sun Color",
           Seq(
             ("Yellow" -> Color.yellow),
@@ -162,8 +147,7 @@ object Gravity {
           )
         )
       )
-      .above(button("Reset"))
-  }
+      .above(Explore.button("Reset"))
 
   def runGravitySim(frame: Frame) = {
     val initial = GravityState(
@@ -200,19 +184,16 @@ object Gravity {
 }
 
 object Tree {
-  def treeExplorer(using
-      intGui: ExploreInt[Component],
-      layout: Layout[Component]
-  ) = {
-    import intGui._
+  import Explore.given
 
-    int("Depth")
+  val treeExplorer =
+    Explore
+      .int("Depth")
       .within(1 to 12)
       .withDefault(3)
       .above(
-        int("Length").within(1 to 2500).withDefault(500)
+        Explore.int("Length").within(1 to 2500).withDefault(500)
       )
-  }
 
   def runTree(frame: Frame) = {
     treeExplorer.explore(
@@ -227,27 +208,21 @@ object Tree {
 }
 
 object Sine {
-  def sineExplorer(using
-      intGui: ExploreInt[Component],
-      colorGui: ExploreColor[Component],
-      layout: Layout[Component]
-  ) = {
-    import intGui._
-    import colorGui._
+  import Explore.given
 
+  val sineExplorer =
     val width =
-      int("Width").within(0 to 2000).withDefault(1000)
+      Explore.int("Width").within(0 to 2000).withDefault(1000)
 
     val amplitude =
-      int("Amplitude").within(0 to 2500).withDefault(500)
+      Explore.int("Amplitude").within(0 to 2500).withDefault(500)
 
     val period =
-      int("Period").within(1 to 1000).withDefault(600)
+      Explore.int("Period").within(1 to 1000).withDefault(600)
 
-    val strokeColor = color("Stroke Color")
+    val strokeColor = Explore.color("Stroke Color")
 
     width.above(amplitude).above(period).above(strokeColor)
-  }
 
   def runSine(frame: Frame) = {
     sineExplorer.explore(
@@ -287,7 +262,7 @@ object Main {
               case "Gravity" => Gravity.runGravitySim(frame.size(800, 800))
               case "Tree"    => Tree.runTree(frame)
               case "Sine"    => Sine.runSine(frame)
-            },
+            }
           }
         }
       )

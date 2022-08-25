@@ -220,13 +220,13 @@ implicit object IntInterpreter extends ExploreInt[Component] {
   def int(label: String) = IntIR(label, None, 0)
 
   extension (generator: Component[Int])
-    def within(start: Int, end: Int) =
+    def within(start: Int, end: Int): Component[Int] =
       generator match {
         case generator: IntIR => generator.copy(bounds = Some(start, end))
       }
 
   extension (generator: Component[Int])
-    def withDefault(initValue: Int) =
+    def withDefault(initValue: Int): Component[Int] =
       generator match {
         case generator: IntIR => generator.copy(initial = initValue)
       }

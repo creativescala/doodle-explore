@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package doodle.explore
+package doodle.explore.java2d
 
 import doodle.core._
 import doodle.image._
@@ -28,7 +28,6 @@ import doodle.java2d.effect.Size._
 import doodle.syntax.all.{RendererFrameOps, AngleIntOps}
 import doodle.interact.syntax._
 
-import doodle.explore.java2d._
 import doodle.explore._
 
 import fs2.{Stream, Pure}
