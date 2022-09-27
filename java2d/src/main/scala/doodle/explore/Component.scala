@@ -16,227 +16,103 @@
 
 package doodle.explore.java2d
 
-import doodle.explore.Explorer
-
-import javax.swing._
-import fs2.Stream
-import fs2.Pure
-
-import doodle.explore.{ExploreInt, ExploreColor, Layout}
-import doodle.explore.Choice
-import doodle.core.{Color, UnsignedByte, Normalized}
+import doodle.core.{Color, Normalized, UnsignedByte}
+import doodle.explore.*
+import doodle.explore.generic.*
+import doodle.algebra.Picture
+import doodle.java2d.{Algebra, Drawing, Frame, Canvas}
+import fs2.{Pure, Stream}
+import javax.swing.*
 import java.awt.{Color => AwtColor}
-import java.awt.event.ActionListener
-import java.awt.event.ActionEvent
-import doodle.java2d
-import doodle.explore.LayoutDirection
+import doodle.interact.effect.AnimationRenderer
+import doodle.effect.Renderer
+import cats.effect.unsafe.implicits.global
 
-/** An explore GUI element for the Java2D backend
-  */
-// enum Component[A]
-//     extends Explorer[
-//       A,
-//       java2d.Drawing,
-//       java2d.Algebra,
-//       java2d.Canvas,
-//       java2d.Frame
-//     ] {
-//   case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
-//       extends Component[Int]
-//   case ColorIR(label: String, initColor: Color) extends Component[Color]
-//   case BooleanIR(label: String, isButton: Boolean) extends Component[Boolean]
-//   case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
-//       extends Component[Choice[A]]
-//   case LayoutIR[A, B](
-//       direction: LayoutDirection,
-//       a: Component[A],
-//       b: Component[B]
-//   ) extends Component[(A, B)]
+object Component {
+  type Component[A] = BaseComponent[A]
 
-//   private def toAwtColor(color: Color) = {
-//     val rgba = color.toRGBA
-//     AwtColor(rgba.r.get, rgba.g.get, rgba.b.get, rgba.a.toUnsignedByte.get)
-//   }
+  given java2dExplorer: Explorer[Component, Algebra, Drawing, Frame, Canvas]
+    with {
+    extension [A](component: Component[A]) {
+      def explore(frame: Frame)(render: A => Picture[Algebra, Drawing, Unit])(
+          using
+          a: AnimationRenderer[Canvas],
+          r: Renderer[Algebra, Component, Frame, Canvas]
+      ): Unit = ???
 
-//   private def fromAwtColor(color: java.awt.Color) = Color.RGBA(
-//     UnsignedByte((color.getRed - 128).toByte),
-//     UnsignedByte((color.getGreen - 128).toByte),
-//     UnsignedByte((color.getBlue - 128).toByte),
-//     Normalized(color.getAlpha.toDouble / 255.0)
-//   )
+      def exploreScan[B](
+          frame: Frame
+      )(
+          initial: B
+      )(scan: (B, A) => B)(render: B => Picture[Algebra, Drawing, Unit])(using
+          a: AnimationRenderer[Canvas],
+          r: Renderer[Algebra, Component, Frame, Canvas]
+      ): Unit = {
+        val frames = run(component).scan(initial)(scan).map(render)
+        (frame
+          .canvas()
+          .flatMap { canvas =>
+            frames.animateWithCanvasToIO(canvas)
+          })
+          .unsafeRunAsync(x => System.err.println(x))
+      }
+    }
+  }
 
-//   private def labelInput(label: String, ui: JComponent): JPanel = {
-//     val panel = new JPanel
-//     panel.setLayout(BoxLayout(panel, BoxLayout.X_AXIS))
+  def toAwtColor(color: Color) = {
+    val rgba = color.toRGBA
+    AwtColor(rgba.r.get, rgba.g.get, rgba.b.get, rgba.a.toUnsignedByte.get)
+  }
 
-//     val labelComponent = JLabel(label)
-//     panel.add(labelComponent)
-//     panel.add(ui)
+  def fromAwtColor(color: java.awt.Color) = Color.RGBA(
+    UnsignedByte((color.getRed - 128).toByte),
+    UnsignedByte((color.getGreen - 128).toByte),
+    UnsignedByte((color.getBlue - 128).toByte),
+    Normalized(color.getAlpha.toDouble / 255.0)
+  )
 
-//     panel
-//   }
+  def labelInput(label: String, ui: JComponent): JPanel = {
+    val panel = new JPanel
+    panel.setLayout(BoxLayout(panel, BoxLayout.X_AXIS))
 
-//   private def dualBoxLayout(direction: Int, a: JComponent, b: JComponent) = {
-//     val panel = JPanel()
-//     panel.setLayout(BoxLayout(panel, direction))
-//     panel.add(a)
-//     panel.add(b)
-//     panel
-//   }
+    val labelComponent = JLabel(label)
+    panel.add(labelComponent)
+    panel.add(ui)
 
-//   def runAndMakeUI: (JComponent, Stream[Pure, A]) = this match {
-//     case IntIR(label, None, initial) =>
-//       val input = JTextField(initial.toString)
-//       val ui = labelInput(label, input)
-//       (ui, Stream(initial).repeat.map(_ => input.getText.toInt))
+    panel
+  }
 
-//     case IntIR(label, Some((start, end)), initial) =>
-//       val slider = JSlider(start, end, initial)
-//       val ui = labelInput(label, slider)
-//       (ui, Stream(initial).repeat.map(_ => slider.getValue))
+  def makeUi[A](component: Component[A]): (JComponent, Stream[Pure, A]) =
+    component match {
+      case IntComponent(label, None, default) =>
+        val input = JTextField(default.toString)
+        val ui = labelInput(label, input)
+        (ui, Stream(default).repeat.map(_ => input.getText.toInt))
 
-//     case ColorIR(name, initial) =>
-//       val panel = new JPanel
-//       panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
+      case IntComponent(label, Some(start, stop), default) =>
+        val slider = JSlider(start, stop, default)
+        val ui = labelInput(label, slider)
+        (ui, Stream(default).repeat.map(_ => slider.getValue))
 
-//       val label = JLabel(name)
-//       val colorPicker = JColorChooser(toAwtColor(initial))
+      case ColorComponent(label, default) =>
+        val colorPicker = JColorChooser(toAwtColor(default))
+        val ui = labelInput(label, colorPicker)
 
-//       panel.add(label)
-//       panel.add(colorPicker)
+        val stream = Stream(default).repeat
+          .map(_ => colorPicker.getColor)
+          .map(fromAwtColor)
 
-//       (
-//         panel,
-//         Stream(initial).repeat.map(_ => colorPicker.getColor).map(fromAwtColor)
-//       )
+        (ui, stream)
+    }
 
-//     case BooleanIR(label, true) =>
-//       val button = JButton(label)
+  def run[A](component: Component[A]): Stream[Pure, A] = {
+    val frame = JFrame("Explorer")
+    val (ui, values) = makeUi(component)
 
-//       var pressed = false
-//       object Listener extends ActionListener {
-//         def actionPerformed(_e: ActionEvent) = {
-//           pressed = true
-//         }
-//       }
-//       button.addActionListener(Listener)
+    frame.add(ui)
+    frame.setVisible(true)
+    frame.pack()
+    values
+  }
 
-//       (
-//         button,
-//         Stream(pressed).repeat.map(_ => {
-//           val wasPressed = pressed
-//           pressed = false
-//           wasPressed
-//         })
-//       )
-
-//     case BooleanIR(label, false) =>
-//       val checkbox = JCheckBox(label)
-
-//       (
-//         checkbox,
-//         Stream(checkbox.isSelected).repeat.map(_ => checkbox.isSelected)
-//       )
-
-//     case ChoiceIR(name, choices, labels) =>
-//       import collection.JavaConverters.seqAsJavaListConverter
-//       val panel = new JPanel
-//       panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS))
-
-//       val label = JLabel(name)
-//       val comboBox = JComboBox(new java.util.Vector(labels.asJava))
-
-//       panel.add(label)
-//       panel.add(comboBox)
-
-//       val labelToChoice = labels.zip(choices.map(Choice(_))).toMap
-
-//       (
-//         panel,
-//         Stream(choices(0)).repeat
-//           .map(_ => comboBox.getSelectedItem.asInstanceOf[String])
-//           .map(labelToChoice)
-//       )
-
-//     case LayoutIR(direction, a, b) =>
-//       val (aUI, aValues) = a.runAndMakeUI
-//       val (bUI, bValues) = b.runAndMakeUI
-//       val directionInt = direction match {
-//         case LayoutDirection.Horizontal => BoxLayout.X_AXIS
-//         case LayoutDirection.Vertical   => BoxLayout.Y_AXIS
-//       }
-//       (dualBoxLayout(directionInt, aUI, bUI), aValues.zip(bValues))
-//   }
-
-//   def run: Stream[Pure, A] = {
-//     val frame = JFrame("Explorer")
-//     val (ui, values) = runAndMakeUI
-
-//     frame.add(ui)
-//     frame.setVisible(true)
-//     frame.pack()
-//     values
-//   }
-// }
-
-// implicit object IntInterpreter extends ExploreInt[Component] {
-//   import Component.IntIR
-
-//   def int(label: String): Component[Int] =
-//     IntIR(label, None, 0)
-
-//   extension (generator: Component[Int])
-//     def within(start: Int, end: Int): Component[Int] =
-//       generator match {
-//         case generator: IntIR =>
-//           generator.copy(bounds = Some(start, end), initial = (start + end) / 2)
-//       }
-
-//   extension (generator: Component[Int])
-//     def withDefault(initValue: Int): Component[Int] =
-//       generator match {
-//         case generator: IntIR => generator.copy(initial = initValue)
-//       }
-// }
-
-// implicit object ChoiceInterpreter extends ExploreChoice[Component] {
-//   import Component.ChoiceIR
-
-//   override def choice[A](label: String, choices: Seq[A]) =
-//     ChoiceIR(label, choices, choices.map(_.toString))
-
-//   override def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
-//     ChoiceIR(label, choices.map(_._2), choices.map(_._1))
-// }
-
-// implicit object ColorInterpreter extends ExploreColor[Component] {
-//   import Component.{ColorIR, ChoiceIR}
-
-//   def color(name: String) =
-//     ColorIR(name, Color.black.asInstanceOf[Color])
-
-//   extension (generator: Component[Color])
-//     def withDefault(initColor: Color): Component[Color] =
-//       generator match {
-//         case generator: ColorIR => generator.copy(initColor = initColor)
-//       }
-// }
-
-// implicit object BooleanInterpreter extends ExploreBoolean[Component] {
-//   import Component.BooleanIR
-
-//   def button(label: String) = BooleanIR(label, true)
-//   def checkbox(label: String) = BooleanIR(label, false)
-// }
-
-// implicit object LayoutInterpreter extends Layout[Component] {
-//   import Component.LayoutIR
-
-//   extension [A, B](top: Component[A])
-//     def above(bottom: Component[B]) =
-//       LayoutIR(LayoutDirection.Vertical, top, bottom)
-
-//   extension [A, B](left: Component[A])
-//     def beside(right: Component[B]) =
-//       LayoutIR(LayoutDirection.Horizontal, left, right)
-// }
+}

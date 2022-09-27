@@ -22,9 +22,10 @@ import org.scalajs.dom
 import fs2.Stream
 import fs2.Pure
 
-import doodle.explore.Explorer
-import doodle.explore.{ExploreInt, ExploreBoolean, ExploreChoice}
-
+import doodle.explore.*
+import doodle.explore.generic.*
+import doodle.effect.Renderer
+import doodle.interact.effect.AnimationRenderer
 import scala.concurrent.duration.DurationInt
 import cats.effect.GenTemporal
 import scala.scalajs.js
@@ -44,39 +45,59 @@ import doodle.core.UnsignedByte
 import doodle.explore.ExploreBoolean
 import doodle.explore.Choice
 
-enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
-  case IntIR(label: String, bounds: Option[(Int, Int)], initial: Int)
-      extends Component[Int]
-  case ColorIR(label: String, initColor: Color) extends Component[Color]
-  case BooleanIR(label: String, isButton: Boolean) extends Component[Boolean]
-  case ChoiceIR[A](label: String, choices: Seq[A], choiceLabels: Seq[String])
-      extends Component[Choice[A]]
-  case LayoutIR[A, B](
-      direction: LayoutDirection,
-      a: Component[A],
-      b: Component[B]
-  ) extends Component[(A, B)]
+object Component {
+  type Component[A] = BaseComponent[A]
 
-  def runAndMakeUI: (Stream[Pure, A], ReactiveHtmlElement[SJSDiv]) =
+  given laminarExplorer: Explorer[Component, Algebra, Drawing, Frame, Canvas]
+    with {
+    extension [A](component: Component[A]) {
+      def explore(frame: Frame)(render: A => Picture[Algebra, Drawing, Unit])(
+          using
+          a: AnimationRenderer[Canvas],
+          r: Renderer[Algebra, Component, Frame, Canvas]
+      ): Unit = ???
+
+      def exploreScan[B](
+          frame: Frame
+      )(
+          initial: B
+      )(scan: (B, A) => B)(render: B => Picture[Algebra, Drawing, Unit])(using
+          a: AnimationRenderer[Canvas],
+          r: Renderer[Algebra, Component, Frame, Canvas]
+      ): Unit = {
+        val frames = run(component).scan(initial)(scan).map(render)
+        (frame
+          .canvas()
+          .flatMap { canvas =>
+            frames.animateWithCanvasToIO(canvas)
+          })
+          .unsafeRunAsync(x => System.err.println(x))
+      }
+    }
+  }
+
+  def makeUi[A](
+      component: Component[A]
+  ): (Stream[Pure, A], ReactiveHtmlElement[SJSDiv]) =
     this match {
-      case IntIR(label, bounds, initial) =>
-        val currentValue = Var(initial.toString)
-        val (min, max) = bounds.getOrElse(0, 100)
+      case IntComponent(label, range, default) =>
+        val currentValue = Var(default.toString)
+        val (min, max) = range.getOrElse(0, 100)
         val app = div(
           span(label),
           input(
             typ("range"),
             minAttr(min.toString),
             maxAttr(max.toString),
-            defaultValue(initial.toString),
+            defaultValue(default.toString),
             onInput.mapToValue --> currentValue
           )
         )
 
-        val values = Stream(initial).repeat.map(_ => currentValue.now().toInt)
+        val values = Stream(default).repeat.map(_ => currentValue.now().toInt)
         (values, app)
 
-      case ColorIR(label, initColor) =>
+      case ColorComponent(label, default) =>
         def colorToHex(color: Color) = {
           val toHex = (c: UnsignedByte) => {
             val str = c.get.toLong.toHexString
@@ -116,85 +137,85 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
           }
         }
 
-        val currentValue = Var(colorToHex(initColor))
+        val currentValue = Var(colorToHex(default))
         val app = div(
           span(label),
           input(typ := "color", onInput.mapToValue --> currentValue),
           span(child.text <-- currentValue)
         )
 
-        val values = Stream(initColor).repeat.map(_ => {
+        val values = Stream(default).repeat.map(_ => {
           // println(s"here: ${currentValue.now()}, ${hexToColor(currentValue.now())}")
           // println(hexToColor(currentValue.now()))
           hexToColor(currentValue.now())
         })
         (values, app)
 
-      case BooleanIR(label, true) =>
-        val currentValue = Var(false)
-        val app = div(button(onClick.mapTo(true) --> currentValue, label))
+      //   case BooleanIR(label, true) =>
+      //     val currentValue = Var(false)
+      //     val app = div(button(onClick.mapTo(true) --> currentValue, label))
 
-        val values = Stream(false).repeat.map(_ => {
-          val wasPressed = currentValue.now()
-          currentValue.set(false)
-          wasPressed
-        })
+      //     val values = Stream(false).repeat.map(_ => {
+      //       val wasPressed = currentValue.now()
+      //       currentValue.set(false)
+      //       wasPressed
+      //     })
 
-        (values, app)
+      //     (values, app)
 
-      case BooleanIR(labelText, false) =>
-        val currentValue = Var(false)
-        val app = div(
-          label(labelText),
-          input(typ := "checkbox", onChange.mapToChecked --> currentValue)
-        )
+      //   case BooleanIR(labelText, false) =>
+      //     val currentValue = Var(false)
+      //     val app = div(
+      //       label(labelText),
+      //       input(typ := "checkbox", onChange.mapToChecked --> currentValue)
+      //     )
 
-        val values = Stream(false).repeat.map(_ => currentValue.now())
-        (values, app)
+      //     val values = Stream(false).repeat.map(_ => currentValue.now())
+      //     (values, app)
 
-      case ChoiceIR(label, choices, choiceLabels) =>
-        val currentValue = Var(choiceLabels(0))
-        val lastValidValue = Var(choiceLabels(0))
-        val labelToChoice = choiceLabels.zip(choices).toMap
-        val app = div(
-          span(label),
-          select(
-            inContext { node =>
-              onChange.mapTo(node.ref.value) --> currentValue.writer
-            },
-            choiceLabels.map(label => option(value := label, label))
-          )
-        )
+      //   case ChoiceIR(label, choices, choiceLabels) =>
+      //     val currentValue = Var(choiceLabels(0))
+      //     val lastValidValue = Var(choiceLabels(0))
+      //     val labelToChoice = choiceLabels.zip(choices).toMap
+      //     val app = div(
+      //       span(label),
+      //       select(
+      //         inContext { node =>
+      //           onChange.mapTo(node.ref.value) --> currentValue.writer
+      //         },
+      //         choiceLabels.map(label => option(value := label, label))
+      //       )
+      //     )
 
-        val values = Stream(choices(0)).repeat.map { _ =>
-          val label = currentValue.now() match {
-            case null => lastValidValue.now()
-            case value => {
-              lastValidValue.set(value)
-              value
-            }
-          }
+      //     val values = Stream(choices(0)).repeat.map { _ =>
+      //       val label = currentValue.now() match {
+      //         case null => lastValidValue.now()
+      //         case value => {
+      //           lastValidValue.set(value)
+      //           value
+      //         }
+      //       }
 
-          labelToChoice(label)
-        }
+      //       labelToChoice(label)
+      //     }
 
-        (values.map(Choice(_)), app)
+      //     (values.map(Choice(_)), app)
 
-      case LayoutIR(direction, a, b) =>
-        val (aValues, aUI) = a.runAndMakeUI
-        val (bValues, bUI) = b.runAndMakeUI
+      //   case LayoutIR(direction, a, b) =>
+      //     val (aValues, aUI) = a.runAndMakeUI
+      //     val (bValues, bUI) = b.runAndMakeUI
 
-        val class_ = direction match {
-          case LayoutDirection.Horizontal => "horizontal"
-          case LayoutDirection.Vertical   => "vertical"
-        }
-        val ui = div(className := class_, aUI, bUI)
-        val values = aValues.zip(bValues)
-        (values, ui)
+      //     val class_ = direction match {
+      //       case LayoutDirection.Horizontal => "horizontal"
+      //       case LayoutDirection.Vertical   => "vertical"
+      //     }
+      //     val ui = div(className := class_, aUI, bUI)
+      //     val values = aValues.zip(bValues)
+      //     (values, ui)
     }
 
-  def run: Stream[Pure, A] = {
-    val (values, ui) = runAndMakeUI
+  def run[A](component: Component[A]): Stream[Pure, A] = {
+    val (values, ui) = makeUi(component)
     val container = dom.document.querySelector("#explorer")
 
     render(container, ui)
@@ -202,8 +223,8 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
     values
   }
 
-  def run(containerId: String): Stream[Pure, A] = {
-    val (values, ui) = runAndMakeUI
+  def run[A](containerId: String, component: Component[A]): Stream[Pure, A] = {
+    val (values, ui) = makeUi(component)
     val container = dom.document.querySelector(containerId)
 
     documentEvents.onDomContentLoaded.foreach { _ =>
@@ -212,63 +233,4 @@ enum Component[A] extends Explorer[A, Drawing, Algebra, Canvas, Frame] {
 
     values
   }
-}
-
-implicit object IntInterpreter extends ExploreInt[Component] {
-  import Component.IntIR
-
-  def int(label: String) = IntIR(label, None, 0)
-
-  extension (generator: Component[Int])
-    def within(start: Int, end: Int): Component[Int] =
-      generator match {
-        case generator: IntIR => generator.copy(bounds = Some(start, end))
-      }
-
-  extension (generator: Component[Int])
-    def withDefault(initValue: Int): Component[Int] =
-      generator match {
-        case generator: IntIR => generator.copy(initial = initValue)
-      }
-}
-
-implicit object ColorInterpreter extends ExploreColor[Component] {
-  import Component.ColorIR
-
-  def color(name: String) =
-    ColorIR(name, Color.black.asInstanceOf[Color])
-
-  extension (generator: Component[Color])
-    def withDefault(initColor: Color) =
-      generator match {
-        case generator: ColorIR => generator.copy(initColor = initColor)
-      }
-}
-
-implicit object BooleanInterpreter extends ExploreBoolean[Component] {
-  import Component.BooleanIR
-
-  def button(label: String) = BooleanIR(label, true)
-  def checkbox(label: String) = BooleanIR(label, false)
-}
-
-implicit object ChoiceInterpreter extends ExploreChoice[Component] {
-  import Component.ChoiceIR
-
-  def choice[A](label: String, choices: Seq[A]) =
-    ChoiceIR(label, choices, choices.map(_.toString))
-  def labeledChoice[A](label: String, choices: Seq[(String, A)]) =
-    ChoiceIR(label, choices.map(_._2), choices.map(_._1))
-}
-
-implicit object LayoutInterpreter extends Layout[Component] {
-  import Component.LayoutIR
-
-  extension [A, B](top: Component[A])
-    def above(bottom: Component[B]) =
-      LayoutIR(LayoutDirection.Vertical, top, bottom)
-
-  extension [A, B](left: Component[A])
-    def beside(right: Component[B]) =
-      LayoutIR(LayoutDirection.Horizontal, left, right)
 }

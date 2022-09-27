@@ -26,9 +26,9 @@ trait ExploreColor[F[_], Component <: F[Color]] {
   extension (generator: Component) def withDefault(initValue: Color): Component
 }
 
-// trait ExploreColorConstructor {
-//   self: BaseConstructor { type Algebra[x[_]] <: ExploreColor[x] } =>
-
-//   def color(label: String): Component[Color] =
-//     algebra.color(label)
-// }
+trait ExploreColorConstructor[F[_], Component <: F[Color]](
+    algebra: ExploreColor[F, Component]
+) {
+  def color(label: String): Component =
+    algebra.color(label)
+}
