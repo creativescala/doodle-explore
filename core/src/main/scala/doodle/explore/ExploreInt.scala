@@ -19,20 +19,20 @@ package doodle.explore
 /** Describes a DSL for exploring an integer value. These functions can be used
   * with dot or infix notation through [[IntComponentOps]].
   */
-trait ExploreInt[F[_]] {
-  def int(label: String): F[Int]
-  extension (generator: F[Int]) def within(start: Int, end: Int): F[Int]
-  extension (generator: F[Int]) def withDefault(initValue: Int): F[Int]
+trait ExploreInt[F[_], Component <: F[Int]] {
+  def int(label: String): Component
+  extension (generator: Component) def within(start: Int, end: Int): Component
+  extension (generator: Component) def withDefault(initValue: Int): Component
 
-  extension (generator: F[Int])
-    def within(range: Range): F[Int] =
+  extension (generator: Component)
+    def within(range: Range): Component =
       if (range.isInclusive) generator.within(range.start, range.end)
       else generator.within(range.start, range.end - 1)
 }
 
-trait ExploreIntConstructor {
-  self: BaseConstructor { type Algebra[x[_]] <: ExploreInt[x] } =>
-
-  def int(label: String): Component[Int] =
+trait ExploreIntConstructor[F[_], Component <: F[Int]](
+    algebra: ExploreInt[F, Component]
+) {
+  def int(label: String): Component =
     algebra.int(label)
 }

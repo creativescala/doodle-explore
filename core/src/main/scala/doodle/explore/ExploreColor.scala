@@ -16,23 +16,19 @@
 
 package doodle.explore
 
-import java.awt.{Color => AwtColor}
-import doodle.core.{Color, UnsignedByte, Normalized}
-
-import fs2.Stream
-import fs2.Pure
+import doodle.core.Color
 
 /** Describes a DSL for exploring a color. These functions can be used with dot
   * or infix notation through [[ColorComponentOps]].
   */
-trait ExploreColor[F[_]] {
-  def color(label: String): F[Color]
-  extension (generator: F[Color]) def withDefault(initValue: Color): F[Color]
+trait ExploreColor[F[_], Component <: F[Color]] {
+  def color(label: String): Component
+  extension (generator: Component) def withDefault(initValue: Color): Component
 }
 
-trait ExploreColorConstructor {
-  self: BaseConstructor { type Algebra[x[_]] <: ExploreColor[x] } =>
+// trait ExploreColorConstructor {
+//   self: BaseConstructor { type Algebra[x[_]] <: ExploreColor[x] } =>
 
-  def color(label: String): Component[Color] =
-    algebra.color(label)
-}
+//   def color(label: String): Component[Color] =
+//     algebra.color(label)
+// }

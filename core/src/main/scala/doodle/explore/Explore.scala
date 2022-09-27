@@ -44,61 +44,27 @@ import cats.kernel.Eq
   * GUI for a given backend. The reference example is
   * [[doodle.explore.java2d.Component]]
   */
-trait Explorer[A, F[_], Alg[x[_]] <: Algebra[x], Canvas, Frame] {
+trait Explorer[
+    Component[_],
+    Alg[x[_]] <: Algebra[x],
+    Drawing[_],
+    Frame,
+    Canvas
+] {
 
-  /** [[run]] instantiates the GUI and returns a stream of its values.
-    */
-  def run: Stream[Pure, A]
+  extension [A](component: Component[A]) {
+    def explore(frame: Frame)(render: A => Picture[Alg, Drawing, Unit])(using
+        a: AnimationRenderer[Canvas],
+        r: Renderer[Alg, Drawing, Frame, Canvas]
+    ): Unit
 
-  def exploreChanges(using
-      a: AnimationRenderer[Canvas],
-      r: Renderer[Alg, F, Frame, Canvas],
-      e: Eq[A]
-  ) =
-    exploreTransformed(s => s.changes)
-
-  /** Given a `Frame` and a render function, `explore` runs the explorer GUI,
-    * initializes the frame, and produces an animation using the render function
-    * and values from the GUI.
-    */
-  def explore(using
-      a: AnimationRenderer[Canvas],
-      r: Renderer[Alg, F, Frame, Canvas]
-  ) =
-    exploreTransformed(identity)
-
-  // /** Like [[explore]], but instead of running `render` directly on the values
-  //   * produced by the GUI, [[exploreWithState]] uses the `scanner` function to
-  //   * update the `initial` state tick-by-tick.
-  //   */
-  def exploreWithState[B](initial: B, scanner: (B, A) => B)(using
-      a: AnimationRenderer[Canvas],
-      r: Renderer[Alg, F, Frame, Canvas]
-  ) =
-    exploreTransformed { stream =>
-      stream.scan(initial)(scanner)
-    }
-
-  // https://www.creativescala.org/doodle/api/doodle/interact/syntax/animationrenderersyntax$animatestreamops
-  /** [[exploreTransformed]] is a more generic [[explore]] function. It runs
-    * `transformer` on the GUI's values before rendering them.
-    */
-  def exploreTransformed[B](
-      transformer: Stream[Pure, A] => Stream[Pure, B]
-  )(frame: Frame, render: B => Picture[Alg, F, Unit])(using
-      a: AnimationRenderer[Canvas],
-      r: Renderer[Alg, F, Frame, Canvas]
-  ) = {
-    val values = transformer(this.run)
-    val frames = values.map(render)
-
-    import cats.effect.unsafe.implicits.global
-    (frame
-      .canvas()
-      .flatMap { canvas =>
-        frames.animateWithCanvasToIO(canvas)
-      })
-      .unsafeRunAsync(x => System.err.println(x))
+    def exploreScan[B](
+        frame: Frame
+    )(initial: B)(scan: (B, A) => B)(render: B => Picture[Alg, Drawing, Unit])(
+        using
+        a: AnimationRenderer[Canvas],
+        r: Renderer[Alg, Drawing, Frame, Canvas]
+    ): Unit
   }
 
   implicit object EqColor extends Eq[Color] {
