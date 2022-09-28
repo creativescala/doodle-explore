@@ -22,40 +22,54 @@ ThisBuild / developers := List(
   tlGitHubDev("noelwelsh", "Noel Welsh")
 )
 
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+
 ThisBuild / tlSonatypeUseLegacyHost := true
 
 ThisBuild / tlSitePublishBranch := Some("main")
 
-val Scala3 = "3.1.3"
+val Scala3 = "3.2.0"
 ThisBuild / crossScalaVersions := Seq(Scala3)
 ThisBuild / scalaVersion := Scala3
 
 // Dependencies used by all the sub-projects
 ThisBuild / libraryDependencies ++= Seq(
-  "org.typelevel" %%% "cats-core" % "2.7.0",
-  "org.typelevel" %%% "cats-effect" % "3.3.12",
-  "co.fs2" %% "fs2-core" % "3.2.8",
-  "org.creativescala" %% "doodle" % "0.11.2",
+  "org.typelevel" %%% "cats-core" % "2.8.0",
+  "org.typelevel" %%% "cats-effect" % "3.3.14",
+  "co.fs2" %%% "fs2-core" % "3.3.0",
+  "org.creativescala" %%% "doodle" % "0.11.2",
   "org.scalameta" %%% "munit" % "0.7.29" % Test,
   "org.typelevel" %%% "munit-cats-effect-3" % "1.0.7" % Test
 )
 
+// Run this (build) to do everything involved in building the project
+commands += Command.command("build") { state =>
+  "dependencyUpdates" ::
+    "compile" ::
+    "test" ::
+    "scalafixAll" ::
+    "scalafmtAll" ::
+    state
+}
+
 lazy val root = tlCrossRootProject.aggregate(core, java2d, laminar)
+lazy val rootJvm = root.jvm.dependsOn(core.jvm, java2d)
+lazy val rootJs = root.js.dependsOn(core.js, laminar)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
   .settings(name := "doodle-explore")
 
-lazy val java2d = crossProject(JVMPlatform)
-  .crossType(CrossType.Pure)
+lazy val java2d = project
   .in(file("java2d"))
-  .settings(name := "doodle-explore")
-  .dependsOn(core)
+  .dependsOn(core.jvm)
 
-lazy val laminar = crossProject(JSPlatform)
-  .crossType(CrossType.Pure)
+lazy val laminar = project
   .in(file("laminar"))
+  .enablePlugins(ScalaJSPlugin)
   .settings(
     name := "doodle-explore",
     scalaJSUseMainModuleInitializer := true,
@@ -65,7 +79,7 @@ lazy val laminar = crossProject(JSPlatform)
       "org.creativescala" %%% "doodle-svg" % "0.11.3"
     )
   )
-  .dependsOn(core)
+  .dependsOn(core.js)
 
 /* lazy val buildLaminarExample = taskKey[String]("Builds a doodle-explore laminar example") */
 /* import complete.DefaultParsers._ */
@@ -77,9 +91,9 @@ lazy val laminar = crossProject(JSPlatform)
 /* } */
 
 /** Example that is used in documentation */
-lazy val example = crossProject(JSPlatform)
-  .crossType(CrossType.Pure)
+lazy val example = project
   .in(file("example"))
+  .enablePlugins(ScalaJSPlugin)
   .settings(
     libraryDependencies ++= Seq(
       "com.raquo" %%% "laminar" % "0.14.2",
@@ -150,11 +164,11 @@ lazy val docs = project
         )
     },
     Laika / sourceDirectories +=
-      (example.js / Compile / fastOptJS / artifactPath).value
-        .getParentFile() / s"${(example.js / moduleName).value}-fastopt",
+      (example / Compile / fastOptJS / artifactPath).value
+        .getParentFile() / s"${(example / moduleName).value}-fastopt",
     tlSite := Def
       .sequential(
-        (example.js / Compile / fastOptJS),
+        (example / Compile / fastOptJS),
         mdoc.toTask(""),
         laikaSite
       )
