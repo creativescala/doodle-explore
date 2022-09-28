@@ -9,6 +9,8 @@ import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("Example")
 object Example {
+  import Explore.given
+
   def concentricCircles(count: Int, color: Color): Picture[Unit] =
     if count == 0 then Picture.empty
     else
@@ -26,14 +28,13 @@ object Example {
     val initialCount = 4
     val initialColor = Color.springGreen
 
-    IntInterpreter
+    Explore
       .int("Count")
       .within(1, 20)
       .withDefault(initialCount)
-      .above(ColorInterpreter.color("Color").withDefault(initialColor))
-      .explore(
-        frame,
-        (count, color) => concentricCircles(count, color)
-      )
+      .above(Explore.color("Color").withDefault(initialColor))
+      .explore(frame) { (count, color) =>
+        concentricCircles(count, color)
+      }
   }
 }
