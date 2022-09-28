@@ -10,7 +10,7 @@ import TypelevelGitHubPlugin._
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 // https://typelevel.org/sbt-typelevel/faq.html#what-is-a-base-version-anyway
-ThisBuild / tlBaseVersion := "0.11" // your current series x.y
+ThisBuild / tlBaseVersion := "0.12" // your current series x.y
 
 ThisBuild / organization := "org.creativescala"
 ThisBuild / organizationName := "Creative Scala"
@@ -54,9 +54,11 @@ commands += Command.command("build") { state =>
     state
 }
 
-lazy val root = tlCrossRootProject.aggregate(core, java2d, laminar)
-lazy val rootJvm = root.jvm.dependsOn(core.jvm, java2d)
-lazy val rootJs = root.js.dependsOn(core.js, laminar)
+lazy val root = crossProject(JSPlatform, JVMPlatform).in(file("."))
+lazy val rootJvm =
+  root.jvm.dependsOn(core.jvm, java2d).aggregate(core.jvm, java2d)
+lazy val rootJs =
+  root.js.dependsOn(core.js, laminar).aggregate(core.js, laminar)
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
