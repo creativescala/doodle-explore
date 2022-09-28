@@ -51,6 +51,7 @@ commands += Command.command("build") { state =>
     "test" ::
     "scalafixAll" ::
     "scalafmtAll" ::
+    "headerCreate" ::
     state
 }
 
