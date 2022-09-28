@@ -16,23 +16,18 @@
 
 package doodle.explore.laminar
 
+import com.raquo.laminar.api.L.{_, given}
 import doodle.core._
+import doodle.explore.Choice
+import doodle.explore.*
+import doodle.image.Image
 import doodle.image._
 import doodle.image.syntax.core._
-
-import doodle.explore.Choice
-
 import doodle.svg.effect.Frame
 import doodle.svg.svgAnimationRenderer
 import doodle.svg.svgRenderer
-
 import org.scalajs.dom
 import org.scalajs.dom.document
-
-import com.raquo.laminar.api.L.{*, given}
-import doodle.image.Image
-
-import doodle.explore.*
 
 object Fractals {
   import Explore.given

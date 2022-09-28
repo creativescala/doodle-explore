@@ -17,28 +17,25 @@
 package doodle
 package explore
 
+import cats.effect.IO
+import cats.kernel.Eq
+import doodle.algebra.Algebra
+import doodle.algebra.Picture
 import doodle.core._
+import doodle.effect.Renderer
 import doodle.image._
-import doodle.algebra.{Algebra, Picture}
 import doodle.image.syntax.all._
 import doodle.image.syntax.core._
-import doodle.interact.syntax.all._
-
-import doodle.syntax.all.{RendererFrameOps, AngleIntOps}
+import doodle.interact.effect.AnimationRenderer
 import doodle.interact.syntax._
-
+import doodle.interact.syntax.all._
 import doodle.java2d.effect.Center._
 import doodle.java2d.effect.Redraw._
 import doodle.java2d.effect.Size._
-
-import fs2.Stream
+import doodle.syntax.all.AngleIntOps
+import doodle.syntax.all.RendererFrameOps
 import fs2.Pure
-
-import cats.effect.IO
-import doodle.interact.effect.AnimationRenderer
-import doodle.effect.Renderer
-
-import cats.kernel.Eq
+import fs2.Stream
 
 /** An `Explorer[A]` is the base type that describes how to render an explore
   * GUI for a given backend. The reference example is

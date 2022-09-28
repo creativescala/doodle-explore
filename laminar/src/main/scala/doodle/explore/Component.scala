@@ -16,36 +16,34 @@
 
 package doodle.explore.laminar
 
-import com.raquo.laminar.api.L.{*, given}
-import org.scalajs.dom
-
-import fs2.Stream
-import fs2.Pure
-
+import cats.effect.GenTemporal
+import com.raquo.laminar.api.L.{_, given}
+import com.raquo.laminar.nodes.ReactiveHtmlElement
+import doodle.algebra.Picture
+import doodle.core.Color
+import doodle.core.UnsignedByte
+import doodle.effect.Renderer
+import doodle.explore.Choice
+import doodle.explore.ExploreBoolean
+import doodle.explore.ExploreColor
+import doodle.explore.Layout
+import doodle.explore.LayoutDirection
 import doodle.explore.*
 import doodle.explore.generic.*
-import doodle.syntax.all.*
-import doodle.interact.syntax.all.*
-import doodle.effect.Renderer
 import doodle.interact.effect.AnimationRenderer
-import scala.concurrent.duration.DurationInt
-import cats.effect.GenTemporal
-import scala.scalajs.js
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.scalajs.js.Promise
-import java.util.concurrent.Future
-
+import doodle.interact.syntax.all.*
 import doodle.svg.*
-import com.raquo.laminar.nodes.ReactiveHtmlElement
+import doodle.syntax.all.*
+import fs2.Pure
+import fs2.Stream
+import org.scalajs.dom
 import org.scalajs.dom.html.{Div => SJSDiv}
-import doodle.algebra.Picture
-import doodle.explore.LayoutDirection
-import doodle.explore.Layout
-import doodle.core.Color
-import doodle.explore.ExploreColor
-import doodle.core.UnsignedByte
-import doodle.explore.ExploreBoolean
-import doodle.explore.Choice
+
+import java.util.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
+import scala.scalajs.js
+import scala.scalajs.js.Promise
 
 object Component {
   type Component[A] = BaseComponent[A]

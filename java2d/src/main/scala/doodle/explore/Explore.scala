@@ -17,8 +17,12 @@
 package doodle.explore.java2d
 
 import doodle.explore.*
-import doodle.explore.generic.{IntComponent, ColorComponent}
-import doodle.java2d.{Algebra, Drawing, Frame, Canvas}
+import doodle.explore.generic.ColorComponent
+import doodle.explore.generic.IntComponent
+import doodle.java2d.Algebra
+import doodle.java2d.Canvas
+import doodle.java2d.Drawing
+import doodle.java2d.Frame
 
 object Explore
     extends ExploreIntConstructor(IntComponent.exploreInt)

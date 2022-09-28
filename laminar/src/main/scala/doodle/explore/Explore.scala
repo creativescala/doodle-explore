@@ -17,10 +17,13 @@
 package doodle.explore.laminar
 
 import doodle.explore.*
-
 import doodle.explore.*
-import doodle.explore.generic.{IntComponent, ColorComponent}
-import doodle.svg.{Algebra, Drawing, Frame, Canvas}
+import doodle.explore.generic.ColorComponent
+import doodle.explore.generic.IntComponent
+import doodle.svg.Algebra
+import doodle.svg.Canvas
+import doodle.svg.Drawing
+import doodle.svg.Frame
 
 object Explore
     extends ExploreIntConstructor(IntComponent.exploreInt)

@@ -16,19 +16,23 @@
 
 package doodle.explore.java2d
 
-import doodle.core.{Color, Normalized, UnsignedByte}
+import cats.effect.unsafe.implicits.global
+import doodle.algebra.Picture
+import doodle.core.Color
+import doodle.core.Normalized
+import doodle.core.UnsignedByte
+import doodle.effect.Renderer
 import doodle.explore.*
 import doodle.explore.generic.*
-import doodle.syntax.all.*
-import doodle.interact.syntax.all.*
-import doodle.algebra.Picture
-import doodle.java2d.*
-import fs2.{Pure, Stream}
-import javax.swing.*
-import java.awt.{Color => AwtColor}
 import doodle.interact.effect.AnimationRenderer
-import doodle.effect.Renderer
-import cats.effect.unsafe.implicits.global
+import doodle.interact.syntax.all.*
+import doodle.java2d.*
+import doodle.syntax.all.*
+import fs2.Pure
+import fs2.Stream
+
+import java.awt.{Color => AwtColor}
+import javax.swing.*
 
 object Component {
   type Component[A] = BaseComponent[A]

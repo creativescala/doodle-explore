@@ -17,20 +17,18 @@
 package doodle.explore.java2d
 
 import doodle.core._
+import doodle.explore._
 import doodle.image._
 import doodle.image.syntax.all._
+import doodle.interact.syntax._
 import doodle.java2d._
-
 import doodle.java2d.effect.Center._
 import doodle.java2d.effect.Redraw._
 import doodle.java2d.effect.Size._
-
-import doodle.syntax.all.{RendererFrameOps, AngleIntOps}
-import doodle.interact.syntax._
-
-import doodle.explore._
-
-import fs2.{Stream, Pure}
+import doodle.syntax.all.AngleIntOps
+import doodle.syntax.all.RendererFrameOps
+import fs2.Pure
+import fs2.Stream
 
 object Main extends App {
   import Explore.given
