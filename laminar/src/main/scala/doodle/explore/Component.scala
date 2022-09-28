@@ -24,6 +24,8 @@ import fs2.Pure
 
 import doodle.explore.*
 import doodle.explore.generic.*
+import doodle.syntax.all.*
+import doodle.interact.syntax.all.*
 import doodle.effect.Renderer
 import doodle.interact.effect.AnimationRenderer
 import scala.concurrent.duration.DurationInt
@@ -33,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.Promise
 import java.util.concurrent.Future
 
-import doodle.svg.{Drawing, Algebra, Canvas, Frame}
+import doodle.svg.*
 import com.raquo.laminar.nodes.ReactiveHtmlElement
 import org.scalajs.dom.html.{Div => SJSDiv}
 import doodle.algebra.Picture
@@ -48,14 +50,24 @@ import doodle.explore.Choice
 object Component {
   type Component[A] = BaseComponent[A]
 
+  import cats.effect.unsafe.implicits.global
+
   given laminarExplorer: Explorer[Component, Algebra, Drawing, Frame, Canvas]
     with {
     extension [A](component: Component[A]) {
       def explore(frame: Frame)(render: A => Picture[Algebra, Drawing, Unit])(
           using
           a: AnimationRenderer[Canvas],
-          r: Renderer[Algebra, Component, Frame, Canvas]
-      ): Unit = ???
+          r: Renderer[Algebra, Drawing, Frame, Canvas]
+      ): Unit = {
+        val frames = run(component).map(render)
+        (frame
+          .canvas()
+          .flatMap { canvas =>
+            frames.animateWithCanvasToIO(canvas)
+          })
+          .unsafeRunAsync(x => System.err.println(x))
+      }
 
       def exploreScan[B](
           frame: Frame
@@ -63,7 +75,7 @@ object Component {
           initial: B
       )(scan: (B, A) => B)(render: B => Picture[Algebra, Drawing, Unit])(using
           a: AnimationRenderer[Canvas],
-          r: Renderer[Algebra, Component, Frame, Canvas]
+          r: Renderer[Algebra, Drawing, Frame, Canvas]
       ): Unit = {
         val frames = run(component).scan(initial)(scan).map(render)
         (frame
@@ -79,7 +91,7 @@ object Component {
   def makeUi[A](
       component: Component[A]
   ): (Stream[Pure, A], ReactiveHtmlElement[SJSDiv]) =
-    this match {
+    component match {
       case IntComponent(label, range, default) =>
         val currentValue = Var(default.toString)
         val (min, max) = range.getOrElse(0, 100)
@@ -94,7 +106,8 @@ object Component {
           )
         )
 
-        val values = Stream(default).repeat.map(_ => currentValue.now().toInt)
+        val values: Stream[Pure, Int] =
+          Stream(default).repeat.map(_ => currentValue.now().toInt)
         (values, app)
 
       case ColorComponent(label, default) =>
@@ -201,17 +214,21 @@ object Component {
 
       //     (values.map(Choice(_)), app)
 
-      //   case LayoutIR(direction, a, b) =>
-      //     val (aValues, aUI) = a.runAndMakeUI
-      //     val (bValues, bUI) = b.runAndMakeUI
+      case Beside(left, right) =>
+        val (aValues, aUI) = makeUi(left)
+        val (bValues, bUI) = makeUi(right)
 
-      //     val class_ = direction match {
-      //       case LayoutDirection.Horizontal => "horizontal"
-      //       case LayoutDirection.Vertical   => "vertical"
-      //     }
-      //     val ui = div(className := class_, aUI, bUI)
-      //     val values = aValues.zip(bValues)
-      //     (values, ui)
+        val ui = div(className := "horizontal", aUI, bUI)
+        val values = aValues.zip(bValues)
+        (values, ui)
+
+      case Above(top, bottom) =>
+        val (aValues, aUI) = makeUi(top)
+        val (bValues, bUI) = makeUi(bottom)
+
+        val ui = div(className := "vertical", aUI, bUI)
+        val values = aValues.zip(bValues)
+        (values, ui)
     }
 
   def run[A](component: Component[A]): Stream[Pure, A] = {

@@ -28,7 +28,8 @@ object Explore
   export Component.Component
 
   export doodle.explore.generic.IntComponent.given ExploreInt
-  export doodle.explore.generic.IntComponent.given ExploreColor
+  export doodle.explore.generic.ColorComponent.given ExploreColor
+  export doodle.explore.generic.Layout.layout
   export Component.given Explorer[Component, Algebra, Drawing, Frame, Canvas]
 
 }

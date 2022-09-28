@@ -20,7 +20,9 @@ package doodle.explore
   * These functions can be used with dot or infix notation through
   * [[LayoutOps]].
   */
-trait Layout[Compoment[_]] {
-  extension [A, B](top: Compoment[A]) def above(bottom: Compoment[B]): Compoment[(A, B)]
-  extension [A, B](left: Compoment[A]) def beside(right: Compoment[B]): Compoment[(A, B)]
+trait Layout[Component[_]] {
+  extension [A, B](top: Component[A])
+    def above(bottom: Component[B]): Component[(A, B)]
+  extension [A, B](left: Component[A])
+    def beside(right: Component[B]): Component[(A, B)]
 }

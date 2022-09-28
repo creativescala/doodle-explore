@@ -19,8 +19,10 @@ package doodle.explore.java2d
 import doodle.core.{Color, Normalized, UnsignedByte}
 import doodle.explore.*
 import doodle.explore.generic.*
+import doodle.syntax.all.*
+import doodle.interact.syntax.all.*
 import doodle.algebra.Picture
-import doodle.java2d.{Algebra, Drawing, Frame, Canvas}
+import doodle.java2d.*
 import fs2.{Pure, Stream}
 import javax.swing.*
 import java.awt.{Color => AwtColor}
@@ -37,8 +39,16 @@ object Component {
       def explore(frame: Frame)(render: A => Picture[Algebra, Drawing, Unit])(
           using
           a: AnimationRenderer[Canvas],
-          r: Renderer[Algebra, Component, Frame, Canvas]
-      ): Unit = ???
+          r: Renderer[Algebra, Drawing, Frame, Canvas]
+      ): Unit = {
+        val frames = run(component).map(render)
+        (frame
+          .canvas()
+          .flatMap { canvas =>
+            frames.animateWithCanvasToIO(canvas)
+          })
+          .unsafeRunAsync(x => System.err.println(x))
+      }
 
       def exploreScan[B](
           frame: Frame
@@ -46,7 +56,7 @@ object Component {
           initial: B
       )(scan: (B, A) => B)(render: B => Picture[Algebra, Drawing, Unit])(using
           a: AnimationRenderer[Canvas],
-          r: Renderer[Algebra, Component, Frame, Canvas]
+          r: Renderer[Algebra, Drawing, Frame, Canvas]
       ): Unit = {
         val frames = run(component).scan(initial)(scan).map(render)
         (frame
@@ -82,6 +92,14 @@ object Component {
     panel
   }
 
+  private def dualBoxLayout(direction: Int, a: JComponent, b: JComponent) = {
+    val panel = JPanel()
+    panel.setLayout(BoxLayout(panel, direction))
+    panel.add(a)
+    panel.add(b)
+    panel
+  }
+
   def makeUi[A](component: Component[A]): (JComponent, Stream[Pure, A]) =
     component match {
       case IntComponent(label, None, default) =>
@@ -103,6 +121,16 @@ object Component {
           .map(fromAwtColor)
 
         (ui, stream)
+
+      case Above(top, bottom) =>
+        val (aUI, aValues) = makeUi(top)
+        val (bUI, bValues) = makeUi(bottom)
+        (dualBoxLayout(BoxLayout.Y_AXIS, aUI, bUI), aValues.zip(bValues))
+
+      case Beside(left, right) =>
+        val (aUI, aValues) = makeUi(left)
+        val (bUI, bValues) = makeUi(right)
+        (dualBoxLayout(BoxLayout.X_AXIS, aUI, bUI), aValues.zip(bValues))
     }
 
   def run[A](component: Component[A]): Stream[Pure, A] = {

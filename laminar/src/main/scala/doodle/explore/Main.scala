@@ -87,14 +87,11 @@ object Fractals {
   }
 
   def runFractal(frame: Frame, fractalFn: (Int, Int) => Image) = {
-    fractalExplorer.explore(
-      frame,
-      { case ((size, iterations), strokeColor) =>
-        Image.compile {
-          fractalFn(iterations, size).strokeColor(strokeColor)
-        }
+    fractalExplorer.explore(frame) { case ((size, iterations), strokeColor) =>
+      Image.compile {
+        fractalFn(iterations, size).strokeColor(strokeColor)
       }
-    )
+    }
   }
 
   val fractalExplorer =
@@ -126,61 +123,61 @@ object Gravity {
     state.copy(pos = state.pos + state.vel * dt, vel = state.vel + accel * dt)
   }
 
-  val gravityExplorer =
-    Explore
-      .int("G")
-      .within(0 to 10)
-      .withDefault(1)
-      .above(
-        Explore.int("DT").within(1 to 100).withDefault(16)
-      )
-      .above(
-        Explore.int("Start Velocity").within(0 to 100).withDefault(30)
-      )
-      .above(
-        Explore.labeledChoice(
-          "Sun Color",
-          Seq(
-            ("Yellow" -> Color.yellow),
-            ("Red" -> Color.red),
-            ("Blue" -> Color.blue)
-          )
-        )
-      )
-      .above(Explore.button("Reset"))
+  // val gravityExplorer =
+  //   Explore
+  //     .int("G")
+  //     .within(0 to 10)
+  //     .withDefault(1)
+  //     .above(
+  //       Explore.int("DT").within(1 to 100).withDefault(16)
+  //     )
+  //     .above(
+  //       Explore.int("Start Velocity").within(0 to 100).withDefault(30)
+  //     )
+  //     .above(
+  //       Explore.labeledChoice(
+  //         "Sun Color",
+  //         Seq(
+  //           ("Yellow" -> Color.yellow),
+  //           ("Red" -> Color.red),
+  //           ("Blue" -> Color.blue)
+  //         )
+  //       )
+  //     )
+  //     .above(Explore.button("Reset"))
 
-  def runGravitySim(frame: Frame) = {
-    val initial = GravityState(
-      Vec(300.0, 0.degrees),
-      Vec(3.0, 90.degrees),
-      0.1,
-      Color.yellow
-    )
-    val update: (
-        GravityState,
-        ((((Int, Int), Int), Choice[Color]), Boolean)
-    ) => GravityState = {
-      case (state, ((((g, dt), startVel), newSunColor), reset)) =>
-        if (reset) {
-          initial.copy(vel = Vec(startVel / 10.0, 90.degrees))
-        } else {
-          gravitySim(state, dt / 100.0, g / 10.0)
-            .copy(sunColor = newSunColor.value)
-        }
-    }
+  // def runGravitySim(frame: Frame) = {
+  //   val initial = GravityState(
+  //     Vec(300.0, 0.degrees),
+  //     Vec(3.0, 90.degrees),
+  //     0.1,
+  //     Color.yellow
+  //   )
+  //   val update: (
+  //       GravityState,
+  //       ((((Int, Int), Int), Choice[Color]), Boolean)
+  //   ) => GravityState = {
+  //     case (state, ((((g, dt), startVel), newSunColor), reset)) =>
+  //       if (reset) {
+  //         initial.copy(vel = Vec(startVel / 10.0, 90.degrees))
+  //       } else {
+  //         gravitySim(state, dt / 100.0, g / 10.0)
+  //           .copy(sunColor = newSunColor.value)
+  //       }
+  //   }
 
-    def render(state: GravityState) = {
-      val planet = Image.circle(5.0).fillColor(Color.black).at(state.pos)
-      val sun = Image.circle(20.0).fillColor(state.sunColor).strokeWidth(0.1)
+  //   def render(state: GravityState) = {
+  //     val planet = Image.circle(5.0).fillColor(Color.black).at(state.pos)
+  //     val sun = Image.circle(20.0).fillColor(state.sunColor).strokeWidth(0.1)
 
-      planet on sun
-    }
+  //     planet on sun
+  //   }
 
-    gravityExplorer.exploreWithState(initial, update)(
-      frame,
-      s => Image.compile(render(s))
-    )
-  }
+  // gravityExplorer.exploreWithState(initial, update)(
+  // frame,
+  // s => Image.compile(render(s))
+  //   )
+  // }
 }
 
 object Tree {
@@ -196,14 +193,11 @@ object Tree {
       )
 
   def runTree(frame: Frame) = {
-    treeExplorer.explore(
-      frame,
-      { case (depth, length) =>
-        Image.compile {
-          doodle.image.examples.Tree.branch(depth, 0.degrees, length / 10.0)
-        }
+    treeExplorer.explore(frame) { case (depth, length) =>
+      Image.compile {
+        doodle.image.examples.Tree.branch(depth, 0.degrees, length / 10.0)
       }
-    )
+    }
   }
 }
 
@@ -225,17 +219,14 @@ object Sine {
     width.above(amplitude).above(period).above(strokeColor)
 
   def runSine(frame: Frame) = {
-    sineExplorer.explore(
-      frame,
-      { case (((width, amplitude), period), color) =>
-        Image.compile {
-          val curve =
-            doodle.image.examples.Sine.sine(width, amplitude / 10.0, period)
+    sineExplorer.explore(frame) { case (((width, amplitude), period), color) =>
+      Image.compile {
+        val curve =
+          doodle.image.examples.Sine.sine(width, amplitude / 10.0, period)
 
-          doodle.image.examples.Sine.styledSine(curve).strokeColor(color)
-        }
+        doodle.image.examples.Sine.styledSine(curve).strokeColor(color)
       }
-    )
+    }
   }
 }
 
@@ -258,10 +249,10 @@ object Main {
             choice match {
               case "Sierpinski" =>
                 Fractals.runFractal(frame, Fractals.sierpinski)
-              case "Smiley"  => Fractals.runFractal(frame, Fractals.smiley)
-              case "Gravity" => Gravity.runGravitySim(frame.size(800, 800))
-              case "Tree"    => Tree.runTree(frame)
-              case "Sine"    => Sine.runSine(frame)
+              case "Smiley" => Fractals.runFractal(frame, Fractals.smiley)
+              // case "Gravity" => Gravity.runGravitySim(frame.size(800, 800))
+              case "Tree" => Tree.runTree(frame)
+              case "Sine" => Sine.runSine(frame)
             }
           }
         }
