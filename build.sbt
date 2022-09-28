@@ -10,7 +10,7 @@ import TypelevelGitHubPlugin._
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 // https://typelevel.org/sbt-typelevel/faq.html#what-is-a-base-version-anyway
-ThisBuild / tlBaseVersion := "0.13" // your current series x.y
+ThisBuild / tlBaseVersion := "0.14" // your current series x.y
 
 ThisBuild / organization := "org.creativescala"
 ThisBuild / organizationName := "Creative Scala"
