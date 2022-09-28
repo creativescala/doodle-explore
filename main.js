@@ -6619,6 +6619,7 @@ function $h_Ldoodle_explore_laminar_Component$() {
 $h_Ldoodle_explore_laminar_Component$.prototype = $c_Ldoodle_explore_laminar_Component$.prototype;
 $c_Ldoodle_explore_laminar_Component$.prototype.makeUi__Ldoodle_explore_generic_BaseComponent__T2 = (function(component) {
   if ((component instanceof $c_Ldoodle_explore_generic_IntComponent)) {
+    $m_Ldoodle_explore_generic_IntComponent$();
     var x$1 = $as_Ldoodle_explore_generic_IntComponent(component);
     var x55 = x$1.Ldoodle_explore_generic_IntComponent__f_label;
     var x56 = x$1.Ldoodle_explore_generic_IntComponent__f_range;
@@ -6674,6 +6675,7 @@ $c_Ldoodle_explore_laminar_Component$.prototype.makeUi__Ldoodle_explore_generic_
     return new $c_T2(values, app)
   };
   if ((component instanceof $c_Ldoodle_explore_generic_ColorComponent)) {
+    $m_Ldoodle_explore_generic_ColorComponent$();
     var x$1$1 = $as_Ldoodle_explore_generic_ColorComponent(component);
     var x51 = x$1$1.Ldoodle_explore_generic_ColorComponent__f_label;
     var x52 = x$1$1.Ldoodle_explore_generic_ColorComponent__f_default;
@@ -6792,7 +6794,7 @@ $c_Ldoodle_explore_laminar_Component$.prototype.makeUi__Ldoodle_explore_generic_
   };
   throw new $c_s_MatchError(component)
 });
-$c_Ldoodle_explore_laminar_Component$.prototype.run__Ldoodle_explore_generic_BaseComponent__Lfs2_Stream = (function(component) {
+$c_Ldoodle_explore_laminar_Component$.prototype.run__Ldoodle_svg_effect_Frame__Ldoodle_explore_generic_BaseComponent__Lfs2_Stream = (function(frame, component) {
   matchResult11: {
     var \u03b48$___1;
     var \u03b48$___2;
@@ -6808,7 +6810,10 @@ $c_Ldoodle_explore_laminar_Component$.prototype.run__Ldoodle_explore_generic_Bas
   };
   var values$2 = $as_Lfs2_Stream(\u03b48$___1);
   var ui$2 = $as_Lcom_raquo_laminar_nodes_ReactiveHtmlElement(\u03b48$___2);
-  var container = document.querySelector("#explorer");
+  var container = document.getElementById(frame.Ldoodle_svg_effect_Frame__f_id);
+  var svgContainer = document.createElement("div");
+  svgContainer.id = (frame.Ldoodle_svg_effect_Frame__f_id + "-svg");
+  container.insertAdjacentElement("afterend", svgContainer);
   $m_Lcom_raquo_laminar_api_package$();
   new $c_Lcom_raquo_laminar_nodes_RootNode(container, ui$2);
   return values$2
@@ -6826,6 +6831,35 @@ function $m_Ldoodle_explore_laminar_Component$() {
     $n_Ldoodle_explore_laminar_Component$ = new $c_Ldoodle_explore_laminar_Component$()
   };
   return $n_Ldoodle_explore_laminar_Component$
+}
+/** @constructor */
+function $c_Ldoodle_explore_laminar_Explore$() {
+  this.Ldoodle_explore_laminar_Explore$__f_layout = null;
+  this.Ldoodle_explore_laminar_Explore$__f_explorer = null;
+  $n_Ldoodle_explore_laminar_Explore$ = this;
+  this.Ldoodle_explore_laminar_Explore$__f_layout = $m_Ldoodle_explore_generic_Layout$().Ldoodle_explore_generic_Layout$__f_layout;
+  this.Ldoodle_explore_laminar_Explore$__f_explorer = $m_Ldoodle_explore_laminar_Component$laminarExplorer$()
+}
+$c_Ldoodle_explore_laminar_Explore$.prototype = new $h_O();
+$c_Ldoodle_explore_laminar_Explore$.prototype.constructor = $c_Ldoodle_explore_laminar_Explore$;
+/** @constructor */
+function $h_Ldoodle_explore_laminar_Explore$() {
+  /*<skip>*/
+}
+$h_Ldoodle_explore_laminar_Explore$.prototype = $c_Ldoodle_explore_laminar_Explore$.prototype;
+var $d_Ldoodle_explore_laminar_Explore$ = new $TypeData().initClass({
+  Ldoodle_explore_laminar_Explore$: 0
+}, false, "doodle.explore.laminar.Explore$", {
+  Ldoodle_explore_laminar_Explore$: 1,
+  O: 1
+});
+$c_Ldoodle_explore_laminar_Explore$.prototype.$classData = $d_Ldoodle_explore_laminar_Explore$;
+var $n_Ldoodle_explore_laminar_Explore$;
+function $m_Ldoodle_explore_laminar_Explore$() {
+  if ((!$n_Ldoodle_explore_laminar_Explore$)) {
+    $n_Ldoodle_explore_laminar_Explore$ = new $c_Ldoodle_explore_laminar_Explore$()
+  };
+  return $n_Ldoodle_explore_laminar_Explore$
 }
 function $f_Ldoodle_interact_syntax_AnimationRendererSyntax__$init$__V($thiz) {
   /*<skip>*/
@@ -7653,23 +7687,28 @@ $c_Lexample_Example$.prototype.concentricCircles__I__Ldoodle_core_Color__Ldoodle
 $c_Lexample_Example$.prototype.go__T__V = (function(mountId) {
   var frame = $m_Ldoodle_svg_package$().Ldoodle_svg_package$__f_Frame.apply__T__Ldoodle_svg_effect_Frame(mountId);
   var initialColor = $m_Ldoodle_core_Color$().Ldoodle_core_Color$__f_springGreen;
+  var this$11 = $m_Ldoodle_explore_laminar_Explore$().Ldoodle_explore_laminar_Explore$__f_explorer;
   $m_Ldoodle_explore_laminar_Explore$();
-  var $$x1 = $m_Ldoodle_explore_laminar_Component$laminarExplorer$();
   $m_Ldoodle_explore_laminar_Explore$();
-  var this$3 = $m_Ldoodle_explore_laminar_Explore$();
+  $m_Ldoodle_explore_generic_IntComponent$();
+  $m_Ldoodle_explore_generic_IntComponent$();
   var range = $m_s_None$();
   var top = new $c_Ldoodle_explore_generic_IntComponent("Count", range, 0).within__I__I__Ldoodle_explore_generic_IntComponent(1, 20).withDefault__I__Ldoodle_explore_generic_IntComponent(4);
-  var this$6 = $m_Ldoodle_explore_laminar_Explore$();
+  $m_Ldoodle_explore_laminar_Explore$();
+  $m_Ldoodle_explore_generic_ColorComponent$();
+  $m_Ldoodle_explore_generic_ColorComponent$();
   var default$1 = $m_Ldoodle_core_Color$().Ldoodle_core_Color$__f_black;
-  var this$9 = new $c_Ldoodle_explore_generic_ColorComponent("Color", default$1);
-  var label = this$9.Ldoodle_explore_generic_ColorComponent__f_label;
+  var this$7 = new $c_Ldoodle_explore_generic_ColorComponent("Color", default$1);
+  var label = this$7.Ldoodle_explore_generic_ColorComponent__f_label;
   var bottom = new $c_Ldoodle_explore_generic_ColorComponent(label, initialColor);
-  $$x1.explore__Ldoodle_explore_generic_BaseComponent__Ldoodle_svg_effect_Frame__F1__Ldoodle_interact_effect_AnimationRenderer__Ldoodle_effect_Renderer__V(new $c_Ldoodle_explore_generic_Above(top, bottom), frame, new $c_sjsr_AnonFunction1(((x$1) => {
+  var component = new $c_Ldoodle_explore_generic_Above(top, bottom);
+  var render = new $c_sjsr_AnonFunction1(((x$1) => {
     var x$1$1 = $as_T2(x$1);
-    var count = $uI(x$1$1.T2__f__1);
-    var color = $as_Ldoodle_core_Color(x$1$1.T2__f__2);
-    return this.concentricCircles__I__Ldoodle_core_Color__Ldoodle_algebra_Picture(count, color)
-  })), $m_Ldoodle_svg_package$().Ldoodle_svg_package$__f_svgAnimationRenderer, $m_Ldoodle_svg_package$().Ldoodle_svg_package$__f_svgRenderer)
+    return this.concentricCircles__I__Ldoodle_core_Color__Ldoodle_algebra_Picture($uI(x$1$1.T2__f__1), $as_Ldoodle_core_Color(x$1$1.T2__f__2))
+  }));
+  var a = $m_Ldoodle_svg_package$().Ldoodle_svg_package$__f_svgAnimationRenderer;
+  var r = $m_Ldoodle_svg_package$().Ldoodle_svg_package$__f_svgRenderer;
+  this$11.explore__Ldoodle_explore_generic_BaseComponent__Ldoodle_svg_effect_Frame__F1__Ldoodle_interact_effect_AnimationRenderer__Ldoodle_effect_Renderer__V(component, frame, render, a, r)
 });
 $c_Lexample_Example$.prototype.$js$exported$meth$go__T__O = (function(mountId) {
   this.go__T__V(mountId)
@@ -20937,57 +20976,62 @@ function $asArrayOf_Ldoodle_algebra_Style(obj, depth) {
   return (($isArrayOf_Ldoodle_algebra_Style(obj, depth) || (obj === null)) ? obj : $throwArrayCastException(obj, "Ldoodle.algebra.Style;", depth))
 }
 /** @constructor */
-function $c_Ldoodle_explore_generic_ColorComponent$exploreColor$() {
+function $c_Ldoodle_explore_generic_ColorComponent$$anon$3() {
   /*<skip>*/
 }
-$c_Ldoodle_explore_generic_ColorComponent$exploreColor$.prototype = new $h_O();
-$c_Ldoodle_explore_generic_ColorComponent$exploreColor$.prototype.constructor = $c_Ldoodle_explore_generic_ColorComponent$exploreColor$;
+$c_Ldoodle_explore_generic_ColorComponent$$anon$3.prototype = new $h_O();
+$c_Ldoodle_explore_generic_ColorComponent$$anon$3.prototype.constructor = $c_Ldoodle_explore_generic_ColorComponent$$anon$3;
 /** @constructor */
-function $h_Ldoodle_explore_generic_ColorComponent$exploreColor$() {
+function $h_Ldoodle_explore_generic_ColorComponent$$anon$3() {
   /*<skip>*/
 }
-$h_Ldoodle_explore_generic_ColorComponent$exploreColor$.prototype = $c_Ldoodle_explore_generic_ColorComponent$exploreColor$.prototype;
-var $d_Ldoodle_explore_generic_ColorComponent$exploreColor$ = new $TypeData().initClass({
-  Ldoodle_explore_generic_ColorComponent$exploreColor$: 0
-}, false, "doodle.explore.generic.ColorComponent$exploreColor$", {
-  Ldoodle_explore_generic_ColorComponent$exploreColor$: 1,
+$h_Ldoodle_explore_generic_ColorComponent$$anon$3.prototype = $c_Ldoodle_explore_generic_ColorComponent$$anon$3.prototype;
+var $d_Ldoodle_explore_generic_ColorComponent$$anon$3 = new $TypeData().initClass({
+  Ldoodle_explore_generic_ColorComponent$$anon$3: 0
+}, false, "doodle.explore.generic.ColorComponent$$anon$3", {
+  Ldoodle_explore_generic_ColorComponent$$anon$3: 1,
   O: 1,
   Ldoodle_explore_ExploreColor: 1
 });
-$c_Ldoodle_explore_generic_ColorComponent$exploreColor$.prototype.$classData = $d_Ldoodle_explore_generic_ColorComponent$exploreColor$;
-var $n_Ldoodle_explore_generic_ColorComponent$exploreColor$;
-function $m_Ldoodle_explore_generic_ColorComponent$exploreColor$() {
-  if ((!$n_Ldoodle_explore_generic_ColorComponent$exploreColor$)) {
-    $n_Ldoodle_explore_generic_ColorComponent$exploreColor$ = new $c_Ldoodle_explore_generic_ColorComponent$exploreColor$()
-  };
-  return $n_Ldoodle_explore_generic_ColorComponent$exploreColor$
-}
+$c_Ldoodle_explore_generic_ColorComponent$$anon$3.prototype.$classData = $d_Ldoodle_explore_generic_ColorComponent$$anon$3;
 /** @constructor */
-function $c_Ldoodle_explore_generic_IntComponent$exploreInt$() {
+function $c_Ldoodle_explore_generic_IntComponent$$anon$2() {
   /*<skip>*/
 }
-$c_Ldoodle_explore_generic_IntComponent$exploreInt$.prototype = new $h_O();
-$c_Ldoodle_explore_generic_IntComponent$exploreInt$.prototype.constructor = $c_Ldoodle_explore_generic_IntComponent$exploreInt$;
+$c_Ldoodle_explore_generic_IntComponent$$anon$2.prototype = new $h_O();
+$c_Ldoodle_explore_generic_IntComponent$$anon$2.prototype.constructor = $c_Ldoodle_explore_generic_IntComponent$$anon$2;
 /** @constructor */
-function $h_Ldoodle_explore_generic_IntComponent$exploreInt$() {
+function $h_Ldoodle_explore_generic_IntComponent$$anon$2() {
   /*<skip>*/
 }
-$h_Ldoodle_explore_generic_IntComponent$exploreInt$.prototype = $c_Ldoodle_explore_generic_IntComponent$exploreInt$.prototype;
-var $d_Ldoodle_explore_generic_IntComponent$exploreInt$ = new $TypeData().initClass({
-  Ldoodle_explore_generic_IntComponent$exploreInt$: 0
-}, false, "doodle.explore.generic.IntComponent$exploreInt$", {
-  Ldoodle_explore_generic_IntComponent$exploreInt$: 1,
+$h_Ldoodle_explore_generic_IntComponent$$anon$2.prototype = $c_Ldoodle_explore_generic_IntComponent$$anon$2.prototype;
+var $d_Ldoodle_explore_generic_IntComponent$$anon$2 = new $TypeData().initClass({
+  Ldoodle_explore_generic_IntComponent$$anon$2: 0
+}, false, "doodle.explore.generic.IntComponent$$anon$2", {
+  Ldoodle_explore_generic_IntComponent$$anon$2: 1,
   O: 1,
   Ldoodle_explore_ExploreInt: 1
 });
-$c_Ldoodle_explore_generic_IntComponent$exploreInt$.prototype.$classData = $d_Ldoodle_explore_generic_IntComponent$exploreInt$;
-var $n_Ldoodle_explore_generic_IntComponent$exploreInt$;
-function $m_Ldoodle_explore_generic_IntComponent$exploreInt$() {
-  if ((!$n_Ldoodle_explore_generic_IntComponent$exploreInt$)) {
-    $n_Ldoodle_explore_generic_IntComponent$exploreInt$ = new $c_Ldoodle_explore_generic_IntComponent$exploreInt$()
-  };
-  return $n_Ldoodle_explore_generic_IntComponent$exploreInt$
+$c_Ldoodle_explore_generic_IntComponent$$anon$2.prototype.$classData = $d_Ldoodle_explore_generic_IntComponent$$anon$2;
+/** @constructor */
+function $c_Ldoodle_explore_generic_Layout$$anon$1() {
+  /*<skip>*/
 }
+$c_Ldoodle_explore_generic_Layout$$anon$1.prototype = new $h_O();
+$c_Ldoodle_explore_generic_Layout$$anon$1.prototype.constructor = $c_Ldoodle_explore_generic_Layout$$anon$1;
+/** @constructor */
+function $h_Ldoodle_explore_generic_Layout$$anon$1() {
+  /*<skip>*/
+}
+$h_Ldoodle_explore_generic_Layout$$anon$1.prototype = $c_Ldoodle_explore_generic_Layout$$anon$1.prototype;
+var $d_Ldoodle_explore_generic_Layout$$anon$1 = new $TypeData().initClass({
+  Ldoodle_explore_generic_Layout$$anon$1: 0
+}, false, "doodle.explore.generic.Layout$$anon$1", {
+  Ldoodle_explore_generic_Layout$$anon$1: 1,
+  O: 1,
+  Ldoodle_explore_Layout: 1
+});
+$c_Ldoodle_explore_generic_Layout$$anon$1.prototype.$classData = $d_Ldoodle_explore_generic_Layout$$anon$1;
 /** @constructor */
 function $c_Ldoodle_explore_laminar_Component$laminarExplorer$() {
   /*<skip>*/
@@ -21000,9 +21044,13 @@ function $h_Ldoodle_explore_laminar_Component$laminarExplorer$() {
 }
 $h_Ldoodle_explore_laminar_Component$laminarExplorer$.prototype = $c_Ldoodle_explore_laminar_Component$laminarExplorer$.prototype;
 $c_Ldoodle_explore_laminar_Component$laminarExplorer$.prototype.explore__Ldoodle_explore_generic_BaseComponent__Ldoodle_svg_effect_Frame__F1__Ldoodle_interact_effect_AnimationRenderer__Ldoodle_effect_Renderer__V = (function(component, frame, render, a, r) {
-  var frames = $m_Ldoodle_explore_laminar_Component$().run__Ldoodle_explore_generic_BaseComponent__Lfs2_Stream(component).map__F1__Lfs2_Stream(render);
+  var frames = $m_Ldoodle_explore_laminar_Component$().run__Ldoodle_svg_effect_Frame__Ldoodle_explore_generic_BaseComponent__Lfs2_Stream(frame, component).map__F1__Lfs2_Stream(render);
   var this$1 = $m_Ldoodle_syntax_package$all$();
-  new $c_Ldoodle_syntax_RendererSyntax$RendererFrameOps(this$1, frame).canvas__Ldoodle_effect_Renderer__Lcats_effect_IO(r).flatMap__F1__Lcats_effect_IO(new $c_sjsr_AnonFunction1(((canvas) => {
+  var id = (frame.Ldoodle_svg_effect_Frame__f_id + "-svg");
+  var size = frame.Ldoodle_svg_effect_Frame__f_size;
+  var background = frame.Ldoodle_svg_effect_Frame__f_background;
+  var frame$1 = new $c_Ldoodle_svg_effect_Frame(id, size, background);
+  new $c_Ldoodle_syntax_RendererSyntax$RendererFrameOps(this$1, frame$1).canvas__Ldoodle_effect_Renderer__Lcats_effect_IO(r).flatMap__F1__Lcats_effect_IO(new $c_sjsr_AnonFunction1(((canvas) => {
     var canvas$1 = $as_Ldoodle_svg_effect_Canvas(canvas);
     var this$3 = $m_Ldoodle_interact_syntax_package$all$();
     return new $c_Ldoodle_interact_syntax_AnimationRendererSyntax$AnimateStreamOps(this$3, frames).animateWithCanvasToIO__O__Ldoodle_interact_effect_AnimationRenderer__Ldoodle_effect_Renderer__Lcats_kernel_Monoid__Lcats_effect_IO(canvas$1, a, r, $m_Lcats_kernel_instances_unit_package$().Lcats_kernel_instances_unit_package$__f_catsKernelStdAlgebraForUnit)
@@ -28987,35 +29035,97 @@ function $m_Ldoodle_core_font_FontWeight$() {
   return $n_Ldoodle_core_font_FontWeight$
 }
 /** @constructor */
-function $c_Ldoodle_explore_laminar_Explore$() {
-  this.Ldoodle_explore_laminar_Explore$__f_doodle$explore$ExploreIntConstructor$$algebra = null;
-  this.Ldoodle_explore_laminar_Explore$__f_doodle$explore$ExploreColorConstructor$$algebra = null;
-  $n_Ldoodle_explore_laminar_Explore$ = this;
-  this.Ldoodle_explore_laminar_Explore$__f_doodle$explore$ExploreIntConstructor$$algebra = $m_Ldoodle_explore_generic_IntComponent$exploreInt$();
-  this.Ldoodle_explore_laminar_Explore$__f_doodle$explore$ExploreColorConstructor$$algebra = $m_Ldoodle_explore_generic_ColorComponent$exploreColor$()
+function $c_Ldoodle_explore_generic_ColorComponent$() {
+  this.Ldoodle_explore_generic_ColorComponent$__f_exploreColor = null;
+  $n_Ldoodle_explore_generic_ColorComponent$ = this;
+  this.Ldoodle_explore_generic_ColorComponent$__f_exploreColor = new $c_Ldoodle_explore_generic_ColorComponent$$anon$3()
 }
-$c_Ldoodle_explore_laminar_Explore$.prototype = new $h_O();
-$c_Ldoodle_explore_laminar_Explore$.prototype.constructor = $c_Ldoodle_explore_laminar_Explore$;
+$c_Ldoodle_explore_generic_ColorComponent$.prototype = new $h_O();
+$c_Ldoodle_explore_generic_ColorComponent$.prototype.constructor = $c_Ldoodle_explore_generic_ColorComponent$;
 /** @constructor */
-function $h_Ldoodle_explore_laminar_Explore$() {
+function $h_Ldoodle_explore_generic_ColorComponent$() {
   /*<skip>*/
 }
-$h_Ldoodle_explore_laminar_Explore$.prototype = $c_Ldoodle_explore_laminar_Explore$.prototype;
-var $d_Ldoodle_explore_laminar_Explore$ = new $TypeData().initClass({
-  Ldoodle_explore_laminar_Explore$: 0
-}, false, "doodle.explore.laminar.Explore$", {
-  Ldoodle_explore_laminar_Explore$: 1,
-  O: 1,
-  Ldoodle_explore_ExploreIntConstructor: 1,
-  Ldoodle_explore_ExploreColorConstructor: 1
+$h_Ldoodle_explore_generic_ColorComponent$.prototype = $c_Ldoodle_explore_generic_ColorComponent$.prototype;
+$c_Ldoodle_explore_generic_ColorComponent$.prototype.toString__T = (function() {
+  return "ColorComponent"
 });
-$c_Ldoodle_explore_laminar_Explore$.prototype.$classData = $d_Ldoodle_explore_laminar_Explore$;
-var $n_Ldoodle_explore_laminar_Explore$;
-function $m_Ldoodle_explore_laminar_Explore$() {
-  if ((!$n_Ldoodle_explore_laminar_Explore$)) {
-    $n_Ldoodle_explore_laminar_Explore$ = new $c_Ldoodle_explore_laminar_Explore$()
+var $d_Ldoodle_explore_generic_ColorComponent$ = new $TypeData().initClass({
+  Ldoodle_explore_generic_ColorComponent$: 0
+}, false, "doodle.explore.generic.ColorComponent$", {
+  Ldoodle_explore_generic_ColorComponent$: 1,
+  O: 1,
+  s_deriving_Mirror: 1,
+  s_deriving_Mirror$Product: 1
+});
+$c_Ldoodle_explore_generic_ColorComponent$.prototype.$classData = $d_Ldoodle_explore_generic_ColorComponent$;
+var $n_Ldoodle_explore_generic_ColorComponent$;
+function $m_Ldoodle_explore_generic_ColorComponent$() {
+  if ((!$n_Ldoodle_explore_generic_ColorComponent$)) {
+    $n_Ldoodle_explore_generic_ColorComponent$ = new $c_Ldoodle_explore_generic_ColorComponent$()
   };
-  return $n_Ldoodle_explore_laminar_Explore$
+  return $n_Ldoodle_explore_generic_ColorComponent$
+}
+/** @constructor */
+function $c_Ldoodle_explore_generic_IntComponent$() {
+  this.Ldoodle_explore_generic_IntComponent$__f_exploreInt = null;
+  $n_Ldoodle_explore_generic_IntComponent$ = this;
+  this.Ldoodle_explore_generic_IntComponent$__f_exploreInt = new $c_Ldoodle_explore_generic_IntComponent$$anon$2()
+}
+$c_Ldoodle_explore_generic_IntComponent$.prototype = new $h_O();
+$c_Ldoodle_explore_generic_IntComponent$.prototype.constructor = $c_Ldoodle_explore_generic_IntComponent$;
+/** @constructor */
+function $h_Ldoodle_explore_generic_IntComponent$() {
+  /*<skip>*/
+}
+$h_Ldoodle_explore_generic_IntComponent$.prototype = $c_Ldoodle_explore_generic_IntComponent$.prototype;
+$c_Ldoodle_explore_generic_IntComponent$.prototype.toString__T = (function() {
+  return "IntComponent"
+});
+var $d_Ldoodle_explore_generic_IntComponent$ = new $TypeData().initClass({
+  Ldoodle_explore_generic_IntComponent$: 0
+}, false, "doodle.explore.generic.IntComponent$", {
+  Ldoodle_explore_generic_IntComponent$: 1,
+  O: 1,
+  s_deriving_Mirror: 1,
+  s_deriving_Mirror$Product: 1
+});
+$c_Ldoodle_explore_generic_IntComponent$.prototype.$classData = $d_Ldoodle_explore_generic_IntComponent$;
+var $n_Ldoodle_explore_generic_IntComponent$;
+function $m_Ldoodle_explore_generic_IntComponent$() {
+  if ((!$n_Ldoodle_explore_generic_IntComponent$)) {
+    $n_Ldoodle_explore_generic_IntComponent$ = new $c_Ldoodle_explore_generic_IntComponent$()
+  };
+  return $n_Ldoodle_explore_generic_IntComponent$
+}
+/** @constructor */
+function $c_Ldoodle_explore_generic_Layout$() {
+  this.Ldoodle_explore_generic_Layout$__f_layout = null;
+  $n_Ldoodle_explore_generic_Layout$ = this;
+  this.Ldoodle_explore_generic_Layout$__f_layout = new $c_Ldoodle_explore_generic_Layout$$anon$1()
+}
+$c_Ldoodle_explore_generic_Layout$.prototype = new $h_O();
+$c_Ldoodle_explore_generic_Layout$.prototype.constructor = $c_Ldoodle_explore_generic_Layout$;
+/** @constructor */
+function $h_Ldoodle_explore_generic_Layout$() {
+  /*<skip>*/
+}
+$h_Ldoodle_explore_generic_Layout$.prototype = $c_Ldoodle_explore_generic_Layout$.prototype;
+var $d_Ldoodle_explore_generic_Layout$ = new $TypeData().initClass({
+  Ldoodle_explore_generic_Layout$: 0
+}, false, "doodle.explore.generic.Layout$", {
+  Ldoodle_explore_generic_Layout$: 1,
+  O: 1,
+  s_deriving_Mirror: 1,
+  s_deriving_Mirror$Sum: 1
+});
+$c_Ldoodle_explore_generic_Layout$.prototype.$classData = $d_Ldoodle_explore_generic_Layout$;
+var $n_Ldoodle_explore_generic_Layout$;
+function $m_Ldoodle_explore_generic_Layout$() {
+  if ((!$n_Ldoodle_explore_generic_Layout$)) {
+    $n_Ldoodle_explore_generic_Layout$ = new $c_Ldoodle_explore_generic_Layout$()
+  };
+  return $n_Ldoodle_explore_generic_Layout$
 }
 /** @constructor */
 function $c_Ldoodle_svg_effect_Frame$() {
