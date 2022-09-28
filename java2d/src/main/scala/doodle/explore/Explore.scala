@@ -17,30 +17,17 @@
 package doodle.explore.java2d
 
 import doodle.explore.*
+import doodle.explore.generic.{IntComponent, ColorComponent}
+import doodle.java2d.{Algebra, Drawing, Frame, Canvas}
 
 object Explore
-    extends BaseConstructor,
-      ExploreBooleanConstructor,
-      ExploreChoiceConstructor,
-      ExploreColorConstructor,
-      ExploreIntConstructor {
-  type Algebra[F[_]] = ExploreBoolean[F] & ExploreChoice[F] & ExploreColor[F] &
-    ExploreInt[F] & Layout[F]
+    extends ExploreIntConstructor(IntComponent.exploreInt)
+    with ExploreColorConstructor(ColorComponent.exploreColor) {
+  export Component.Component
 
-  type Component[A] = doodle.explore.java2d.Component[A]
+  export doodle.explore.generic.IntComponent.given ExploreInt
+  export doodle.explore.generic.IntComponent.given ExploreColor
+  export doodle.explore.generic.Layout.layout
+  export Component.given Explorer[Component, Algebra, Drawing, Frame, Canvas]
 
-  object algebraImplementation
-      extends ExploreBoolean[Component],
-        ExploreChoice[Component],
-        ExploreColor[Component],
-        ExploreInt[Component],
-        Layout[Component] {
-    export BooleanInterpreter.*
-    export ChoiceInterpreter.*
-    export ColorInterpreter.*
-    export IntInterpreter.*
-    export LayoutInterpreter.*
-  }
-
-  given algebra: Algebra[Component] = algebraImplementation
 }

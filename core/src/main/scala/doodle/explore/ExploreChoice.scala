@@ -18,16 +18,22 @@ package doodle.explore
 
 case class Choice[A](value: A)
 
-trait ExploreChoice[F[_]] {
-  def choice[A](label: String, choices: Seq[A]): F[Choice[A]]
-  def labeledChoice[A](label: String, choices: Seq[(String, A)]): F[Choice[A]]
-  def labeledChoice[A](label: String, choices: Map[String, A]): F[Choice[A]] =
+trait ExploreChoice[Component[_]] {
+  def choice[A](label: String, choices: Seq[A]): Component[Choice[A]]
+  def labeledChoice[A](
+      label: String,
+      choices: Seq[(String, A)]
+  ): Component[Choice[A]]
+  def labeledChoice[A](
+      label: String,
+      choices: Map[String, A]
+  ): Component[Choice[A]] =
     labeledChoice(label, choices.toSeq)
 }
 
-trait ExploreChoiceConstructor {
-  self: BaseConstructor { type Algebra[x[_]] <: ExploreChoice[x] } =>
-
+trait ExploreChoiceConstructor[Component[_]](
+    algebra: ExploreChoice[Component]
+) {
   def choice[A](label: String, choices: Seq[A]): Component[Choice[A]] =
     algebra.choice(label, choices)
 

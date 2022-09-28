@@ -51,14 +51,11 @@ object Main extends App {
     ClearToBackground
   )
 
-  explorer.explore(
-    frame,
-    { case ((size, iterations), color) =>
-      Image.compile {
-        doodle.image.examples.Sierpinski
-          .sierpinski(iterations, size)
-          .strokeColor(color)
-      }
+  explorer.explore(frame) { case ((size, iterations), color) =>
+    Image.compile {
+      doodle.image.examples.Sierpinski
+        .sierpinski(iterations, size)
+        .strokeColor(color)
     }
-  )
+  }
 }
