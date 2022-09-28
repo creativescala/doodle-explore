@@ -36,6 +36,6 @@ trait BaseConstructor {
   type Component[A]
 
   /** The given instance implementing all the algebras. */
-  given algebra: Algebra[Component]
+  implicit val algebra: Algebra[Component]
 
 }

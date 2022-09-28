@@ -24,10 +24,11 @@ trait ExploreInt[F[_], Component <: F[Int]] {
   extension (generator: Component) def within(start: Int, end: Int): Component
   extension (generator: Component) def withDefault(initValue: Int): Component
 
-  extension (generator: Component)
+  extension (generator: Component) {
     def within(range: Range): Component =
       if (range.isInclusive) generator.within(range.start, range.end)
       else generator.within(range.start, range.end - 1)
+  }
 }
 
 trait ExploreIntConstructor[F[_], Component <: F[Int]](

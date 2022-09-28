@@ -26,7 +26,7 @@ import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("Example")
 object Example {
-  import Explore.given
+  import Explore._
 
   def concentricCircles(count: Int, color: Color): Picture[Unit] =
     if count == 0 then Picture.empty

@@ -27,7 +27,6 @@ import doodle.explore.Choice
 import doodle.explore.ExploreBoolean
 import doodle.explore.ExploreColor
 import doodle.explore.Layout
-import doodle.explore.LayoutDirection
 import doodle.explore.*
 import doodle.explore.generic.*
 import doodle.interact.effect.AnimationRenderer
@@ -58,8 +57,9 @@ object Component {
           a: AnimationRenderer[Canvas],
           r: Renderer[Algebra, Drawing, Frame, Canvas]
       ): Unit = {
-        val frames = run(component).map(render)
+        val frames = run(frame, component).map(render)
         (frame
+          .copy(id = s"${frame.id}-svg")
           .canvas()
           .flatMap { canvas =>
             frames.animateWithCanvasToIO(canvas)
@@ -75,8 +75,9 @@ object Component {
           a: AnimationRenderer[Canvas],
           r: Renderer[Algebra, Drawing, Frame, Canvas]
       ): Unit = {
-        val frames = run(component).scan(initial)(scan).map(render)
+        val frames = run(frame, component).scan(initial)(scan).map(render)
         (frame
+          .copy(id = s"${frame.id}-svg")
           .canvas()
           .flatMap { canvas =>
             frames.animateWithCanvasToIO(canvas)
@@ -229,9 +230,12 @@ object Component {
         (values, ui)
     }
 
-  def run[A](component: Component[A]): Stream[Pure, A] = {
+  def run[A](frame: Frame, component: Component[A]): Stream[Pure, A] = {
     val (values, ui) = makeUi(component)
-    val container = dom.document.querySelector("#explorer")
+    val container = dom.document.getElementById(frame.id)
+    val svgContainer = dom.document.createElement("div")
+    svgContainer.id = s"${frame.id}-svg"
+    container.insertAdjacentElement("afterend", svgContainer)
 
     render(container, ui)
 

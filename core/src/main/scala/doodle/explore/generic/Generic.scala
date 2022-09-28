@@ -27,14 +27,17 @@ final case class Above[A, B](top: BaseComponent[A], bottom: BaseComponent[B])
 final case class Beside[A, B](left: BaseComponent[A], right: BaseComponent[B])
     extends Layout[A, B]
 object Layout {
-  given layout: doodle.explore.Layout[BaseComponent] with {
-    extension [A, B](top: BaseComponent[A])
-      def above(bottom: BaseComponent[B]): BaseComponent[(A, B)] =
-        Above(top, bottom)
-    extension [A, B](left: BaseComponent[A])
-      def beside(right: BaseComponent[B]): BaseComponent[(A, B)] =
-        Beside(left, right)
-  }
+  implicit val layout: doodle.explore.Layout[BaseComponent] =
+    new doodle.explore.Layout[BaseComponent] {
+      extension [A, B](top: BaseComponent[A]) {
+        def above(bottom: BaseComponent[B]): BaseComponent[(A, B)] =
+          Above(top, bottom)
+      }
+      extension [A, B](left: BaseComponent[A]) {
+        def beside(right: BaseComponent[B]): BaseComponent[(A, B)] =
+          Beside(left, right)
+      }
+    }
 }
 
 final case class IntComponent(
@@ -59,17 +62,18 @@ final case class IntComponent(
     else this.within(range.start, range.end - 1)
 }
 object IntComponent {
-  given exploreInt: ExploreInt[BaseComponent, IntComponent] with {
-    def int(label: String): IntComponent = IntComponent(label, None, 0)
+  implicit val exploreInt: ExploreInt[BaseComponent, IntComponent] =
+    new ExploreInt[BaseComponent, IntComponent] {
+      def int(label: String): IntComponent = IntComponent(label, None, 0)
 
-    extension (generator: IntComponent)
-      def within(start: Int, stop: Int): IntComponent =
-        generator.within(start, stop)
+      extension (generator: IntComponent) {
+        def within(start: Int, stop: Int): IntComponent =
+          generator.within(start, stop)
 
-    extension (generator: IntComponent)
-      def withDefault(default: Int): IntComponent =
-        generator.withDefault(default)
-  }
+        def withDefault(default: Int): IntComponent =
+          generator.withDefault(default)
+      }
+    }
 }
 
 final case class ColorComponent(label: String, default: Color)
@@ -78,12 +82,14 @@ final case class ColorComponent(label: String, default: Color)
     this.copy(default = default)
 }
 object ColorComponent {
-  given exploreColor: ExploreColor[BaseComponent, ColorComponent] with {
-    def color(label: String): ColorComponent =
-      ColorComponent(label, Color.black)
+  implicit val exploreColor: ExploreColor[BaseComponent, ColorComponent] =
+    new ExploreColor[BaseComponent, ColorComponent] {
+      def color(label: String): ColorComponent =
+        ColorComponent(label, Color.black)
 
-    extension (generator: ColorComponent)
-      def withDefault(default: Color): ColorComponent =
-        generator.withDefault(default)
-  }
+      extension (generator: ColorComponent) {
+        def withDefault(default: Color): ColorComponent =
+          generator.withDefault(default)
+      }
+    }
 }

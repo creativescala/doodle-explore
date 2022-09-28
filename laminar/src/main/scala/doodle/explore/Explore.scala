@@ -16,8 +16,7 @@
 
 package doodle.explore.laminar
 
-import doodle.explore.*
-import doodle.explore.*
+import doodle.explore._
 import doodle.explore.generic.ColorComponent
 import doodle.explore.generic.IntComponent
 import doodle.svg.Algebra
@@ -25,14 +24,24 @@ import doodle.svg.Canvas
 import doodle.svg.Drawing
 import doodle.svg.Frame
 
-object Explore
-    extends ExploreIntConstructor(IntComponent.exploreInt)
-    with ExploreColorConstructor(ColorComponent.exploreColor) {
-  export Component.Component
+object Explore {
+  // extends ExploreIntConstructor(IntComponent.exploreInt)
+  // with ExploreColorConstructor(ColorComponent.exploreColor) {
+  type Component[A] = Component.Component[A]
 
-  export doodle.explore.generic.IntComponent.given ExploreInt
-  export doodle.explore.generic.ColorComponent.given ExploreColor
-  export doodle.explore.generic.Layout.layout
-  export Component.given Explorer[Component, Algebra, Drawing, Frame, Canvas]
+  // implicit val exploreInt: ExploreInt[Component, IntComponent] =
+  //   doodle.explore.generic.IntComponent.exploreInt
+  // implicit val exploreColor: ExploreColor[Component, ColorComponent] =
+  //   doodle.explore.generic.ColorComponent.exploreColor
+  implicit val layout: Layout[Component] =
+    doodle.explore.generic.Layout.layout
 
+  implicit val explorer: Explorer[Component, Algebra, Drawing, Frame, Canvas] =
+    Component.laminarExplorer
+
+  def int(label: String): IntComponent =
+    IntComponent.exploreInt.int(label)
+
+  def color(label: String): ColorComponent =
+    ColorComponent.exploreColor.color(label)
 }

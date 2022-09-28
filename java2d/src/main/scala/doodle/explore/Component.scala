@@ -37,41 +37,42 @@ import javax.swing.*
 object Component {
   type Component[A] = BaseComponent[A]
 
-  given java2dExplorer: Explorer[Component, Algebra, Drawing, Frame, Canvas]
-    with {
-    extension [A](component: Component[A]) {
-      def explore(frame: Frame)(render: A => Picture[Algebra, Drawing, Unit])(
-          using
-          a: AnimationRenderer[Canvas],
-          r: Renderer[Algebra, Drawing, Frame, Canvas]
-      ): Unit = {
-        val frames = run(component).map(render)
-        (frame
-          .canvas()
-          .flatMap { canvas =>
-            frames.animateWithCanvasToIO(canvas)
-          })
-          .unsafeRunAsync(x => System.err.println(x))
-      }
+  implicit val java2dExplorer
+      : Explorer[Component, Algebra, Drawing, Frame, Canvas] =
+    new Explorer[Component, Algebra, Drawing, Frame, Canvas] {
+      extension [A](component: Component[A]) {
+        def explore(frame: Frame)(render: A => Picture[Algebra, Drawing, Unit])(
+            using
+            a: AnimationRenderer[Canvas],
+            r: Renderer[Algebra, Drawing, Frame, Canvas]
+        ): Unit = {
+          val frames = run(component).map(render)
+          (frame
+            .canvas()
+            .flatMap { canvas =>
+              frames.animateWithCanvasToIO(canvas)
+            })
+            .unsafeRunAsync(x => System.err.println(x))
+        }
 
-      def exploreScan[B](
-          frame: Frame
-      )(
-          initial: B
-      )(scan: (B, A) => B)(render: B => Picture[Algebra, Drawing, Unit])(using
-          a: AnimationRenderer[Canvas],
-          r: Renderer[Algebra, Drawing, Frame, Canvas]
-      ): Unit = {
-        val frames = run(component).scan(initial)(scan).map(render)
-        (frame
-          .canvas()
-          .flatMap { canvas =>
-            frames.animateWithCanvasToIO(canvas)
-          })
-          .unsafeRunAsync(x => System.err.println(x))
+        def exploreScan[B](
+            frame: Frame
+        )(
+            initial: B
+        )(scan: (B, A) => B)(render: B => Picture[Algebra, Drawing, Unit])(using
+            a: AnimationRenderer[Canvas],
+            r: Renderer[Algebra, Drawing, Frame, Canvas]
+        ): Unit = {
+          val frames = run(component).scan(initial)(scan).map(render)
+          (frame
+            .canvas()
+            .flatMap { canvas =>
+              frames.animateWithCanvasToIO(canvas)
+            })
+            .unsafeRunAsync(x => System.err.println(x))
+        }
       }
     }
-  }
 
   def toAwtColor(color: Color) = {
     val rgba = color.toRGBA

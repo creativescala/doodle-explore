@@ -29,9 +29,10 @@ object Explore
     with ExploreColorConstructor(ColorComponent.exploreColor) {
   export Component.Component
 
-  export doodle.explore.generic.IntComponent.given ExploreInt
-  export doodle.explore.generic.IntComponent.given ExploreColor
-  export doodle.explore.generic.Layout.layout
-  export Component.given Explorer[Component, Algebra, Drawing, Frame, Canvas]
+  implicit val layout: Layout[Component] =
+    doodle.explore.generic.Layout.layout
+
+  implicit val explorer: Explorer[Component, Algebra, Drawing, Frame, Canvas] =
+    Component.java2dExplorer
 
 }

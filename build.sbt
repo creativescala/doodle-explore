@@ -10,7 +10,7 @@ import TypelevelGitHubPlugin._
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 // https://typelevel.org/sbt-typelevel/faq.html#what-is-a-base-version-anyway
-ThisBuild / tlBaseVersion := "0.12" // your current series x.y
+ThisBuild / tlBaseVersion := "0.13" // your current series x.y
 
 ThisBuild / organization := "org.creativescala"
 ThisBuild / organizationName := "Creative Scala"
@@ -30,9 +30,10 @@ ThisBuild / tlSonatypeUseLegacyHost := true
 
 ThisBuild / tlSitePublishBranch := Some("main")
 
-val scala3 = "3.2.0"
-ThisBuild / crossScalaVersions := Seq(scala3)
-ThisBuild / scalaVersion := scala3
+val scala3 = "3.1.3"
+val scala2 = "2.13.9"
+ThisBuild / crossScalaVersions := Seq(scala3 /*, scala2*/ )
+ThisBuild / scalaVersion := crossScalaVersions.value.head
 
 // Dependencies used by all the sub-projects
 ThisBuild / libraryDependencies ++= Seq(
@@ -66,18 +67,18 @@ lazy val rootJs =
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
-  .settings(moduleName := "doodle-explore")
+  .settings(moduleName := "doodle-explore-core")
 
 lazy val java2d = project
   .in(file("java2d"))
   .dependsOn(core.jvm)
-  .settings(moduleName := "doodle-explore")
+  .settings(moduleName := "doodle-explore-java2d")
 
 lazy val laminar = project
   .in(file("laminar"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    moduleName := "doodle-explore",
+    moduleName := "doodle-explore-laminar",
     // scalaJSUseMainModuleInitializer := true,
     // Compile / mainClass := Some("doodle.explore.laminar.Main"),
     libraryDependencies ++= Seq(

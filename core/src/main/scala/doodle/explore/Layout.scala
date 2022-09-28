@@ -21,8 +21,10 @@ package doodle.explore
   * [[LayoutOps]].
   */
 trait Layout[Component[_]] {
-  extension [A, B](top: Component[A])
+  extension [A, B](top: Component[A]) {
     def above(bottom: Component[B]): Component[(A, B)]
-  extension [A, B](left: Component[A])
+  }
+  extension [A, B](left: Component[A]) {
     def beside(right: Component[B]): Component[(A, B)]
+  }
 }

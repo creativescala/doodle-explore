@@ -69,7 +69,7 @@ trait Explorer[
   }
 }
 
-enum LayoutDirection {
-  case Vertical
-  case Horizontal
-}
+// enum LayoutDirection {
+//   case Vertical
+//   case Horizontal
+// }
