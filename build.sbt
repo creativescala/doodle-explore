@@ -30,9 +30,9 @@ ThisBuild / tlSonatypeUseLegacyHost := true
 
 ThisBuild / tlSitePublishBranch := Some("main")
 
-val Scala3 = "3.2.0"
-ThisBuild / crossScalaVersions := Seq(Scala3)
-ThisBuild / scalaVersion := Scala3
+val scala3 = "3.2.0"
+ThisBuild / crossScalaVersions := Seq(scala3)
+ThisBuild / scalaVersion := scala3
 
 // Dependencies used by all the sub-projects
 ThisBuild / libraryDependencies ++= Seq(
@@ -55,7 +55,9 @@ commands += Command.command("build") { state =>
     state
 }
 
-lazy val root = crossProject(JSPlatform, JVMPlatform).in(file("."))
+lazy val root = crossProject(JSPlatform, JVMPlatform)
+  .in(file("."))
+  .settings(moduleName := "doodle-explore")
 lazy val rootJvm =
   root.jvm.dependsOn(core.jvm, java2d).aggregate(core.jvm, java2d)
 lazy val rootJs =
@@ -64,19 +66,20 @@ lazy val rootJs =
 lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
-  .settings(name := "doodle-explore")
+  .settings(moduleName := "doodle-explore")
 
 lazy val java2d = project
   .in(file("java2d"))
   .dependsOn(core.jvm)
+  .settings(moduleName := "doodle-explore")
 
 lazy val laminar = project
   .in(file("laminar"))
   .enablePlugins(ScalaJSPlugin)
   .settings(
-    name := "doodle-explore",
-    scalaJSUseMainModuleInitializer := true,
-    Compile / mainClass := Some("doodle.explore.laminar.Main"),
+    moduleName := "doodle-explore",
+    // scalaJSUseMainModuleInitializer := true,
+    // Compile / mainClass := Some("doodle.explore.laminar.Main"),
     libraryDependencies ++= Seq(
       "com.raquo" %%% "laminar" % "0.14.2",
       "org.creativescala" %%% "doodle-svg" % "0.11.3"
@@ -104,6 +107,7 @@ lazy val example = project
     )
   )
   .dependsOn(laminar)
+  .enablePlugins(NoPublishPlugin)
 
 lazy val docs = project
   .in(file("site"))
